@@ -194,9 +194,9 @@
     $('.modal').modal();
     $('.scrollspy').scrollSpy();
     $('.datepicker').datepicker();
-    $('.tabs').tabs();
+    $('ul.tabs').tabs();
     $('.timepicker').timepicker();
-    $('.tooltipped').tooltip();
+    $('.tooltipped').tooltip({delay: 50});
     $('select')
       .not('.disabled')
       .formSelect();
