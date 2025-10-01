@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Vuelo - Hernancius Aviator</title>
+    <link href="dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Variables de color */
+        :root {
+            --light-background: #f9fafb;
+            --light-text: #1f2937;
+            --dark-background: #111827;
+            --dark-text: #f9fafb;
+        }
+        
+        /* Estilos para modo claro/oscuro */
+        .dark {
+            color-scheme: dark;
+        }
+        
+        .bg-light-background {
+            background-color: var(--light-background);
+        }
+        
+        .text-light-text {
+            color: var(--light-text);
+        }
+        
+        .dark .bg-dark-background {
+            background-color: var(--dark-background);
+        }
+        
+        .dark .text-dark-text {
+            color: var(--dark-text);
+        }
+        
+        /* Estilos para las pestañas */
+        .tabs-container {
+            position: relative;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            padding-bottom: 5px;
+        }
+        
+        .tabs-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        .tabs-nav {
+            display: flex;
+            flex-wrap: nowrap;
+            min-width: max-content;
+            gap: 0.5rem;
+        }
+        
+        .tab-button {
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+        
+        @media (max-width: 640px) {
+            .tab-button {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+            
+            .tab-button i {
+                margin-right: 0.25rem;
+            }
+        }
+        
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgb(59 130 246);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .tab-button.active {
+            color: rgb(255, 255, 255);
+            background-color: rgb(59 130 246);
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+        }
+        
+        .dark .tab-button {
+            background-color: #374151;
+            color: #d1d5db;
+        }
+        
+        .dark .tab-button.active {
+            background-color: rgb(59 130 246);
+            color: white;
+        }
+        
+        .tab-button.active::after {
+            transform: scaleX(1);
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: rgb(59 130 246);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .dark .tab-content {
+            background-color: #1f2937;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        
+        .hero-section {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/flight-course-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.6), rgba(37, 99, 235, 0.6));
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .flight-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .dark .flight-card {
+            background-color: #1f2937;
+        }
+        
+        .flight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-group {
+            transition: all 0.3s ease;
+        }
+        
+        .input-group:focus-within {
+            transform: scale(1.02);
+        }
+        
+        .flight-input {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .flight-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .flight-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .flight-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease-out;
+        }
+        
+        .flight-btn:hover::after {
+            transform: translate(-50%, -50%) scale(2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .result-display {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .result-display:hover {
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-light-background text-light-text dark:bg-dark-background dark:text-dark-text">
+    <!-- Header -->
+    <header class="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 fixed w-full z-40 p-4 flex justify-between items-center transition-all duration-300">
+        <!-- Logo -->
+        <div class="text-2xl font-bold">
+            <a href="index.html">
+                <img src="images/logo.png" alt="Mi Logo" class="h-12">
+            </a>
+        </div>
+        <!-- Menú para dispositivos grandes -->
+        <nav class="hidden md:flex items-center space-x-8 text-lg">
+            <a href="index.html" class="hover:text-blue-500">Inicio</a>
+            <a href="index.html#sobre-mi" class="hover:text-blue-500">Sobre Mí</a>
+            <a href="index.html#servicios" class="hover:text-blue-500">Servicios</a>
+            <a href="flightcal.html" class="hover:text-blue-500">FlightCal</a>
+            <a href="conversion.html" class="hover:text-blue-500">Conversión</a>
+            <a href="index.html#blog" class="hover:text-blue-500">Blog</a>
+            <a href="index.html#contacto" class="hover:text-blue-500">Contacto</a>
+            <!-- Botón de alternancia de tema -->
+            <div class="flex items-center ml-4">
+                <label for="theme-toggle" class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="theme-toggle" class="sr-only" onclick="toggleTheme()" />
+                    <div class="w-12 h-6 bg-gray-200 rounded-full p-1 flex items-center dark:bg-gray-600">
+                        <span class="w-4 h-4 bg-white rounded-full shadow-md transform transition-transform dark:translate-x-6"></span>
+                    </div>
+                </label>
+                <span id="theme-label" class="ml-3 text-gray-700 dark:text-gray-300">Light</span>
+            </div>
+        </nav>
+        <!-- Botón de menú móvil -->
+        <button onclick="toggleMenu()" class="text-gray-600 dark:text-gray-300 md:hidden focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+    </header>
+
+    <!-- Menú lateral móvil -->
+    <aside id="mobile-menu" class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 transform -translate-x-full transition-transform duration-300 shadow-lg z-50 md:hidden">
+        <div class="p-6 flex justify-end">
+            <button onclick="toggleMenu()" class="text-gray-600 dark:text-gray-300 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <nav class="mt-8">
+            <ul class="space-y-6 text-center text-lg font-semibold">
+                <li><a href="index.html" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Inicio</a></li>
+                <li><a href="index.html#sobre-mi" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Sobre Mí</a></li>
+                <li><a href="index.html#servicios" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Servicios</a></li>
+                <li><a href="flightcal.html" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">FlightCal</a></li>
+                <li><a href="conversion.html" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Conversión</a></li>
+                <li><a href="index.html#blog" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Blog</a></li>
+                <li><a href="index.html#contacto" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Contacto</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="text-4xl font-bold mb-4">Calculadora de Vuelo</h1>
+                <p class="text-xl opacity-90">Herramienta precisa para planificación de vuelo y cálculos aeronáuticos</p>
+            </div>
+        </section>
+        
+        <div class="container mx-auto px-4 py-12 -mt-16 relative z-10">
+            <!-- Tabs Card -->
+            <div class="flight-card p-4 mb-8">
+                <div class="bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div class="overflow-x-auto py-2 px-2 tabs-container">
+                        <nav class="flex gap-2 min-w-max tabs-nav" aria-label="Tabs">
+                            <button class="tab-button active" data-tab="takeoff">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-plane-departure fa-fw"></i>
+                                    Cálculo de Despegue
+                                </span>
+                            </button>
+                            <button class="tab-button" data-tab="climb">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-chart-line fa-fw"></i>
+                                    Cálculo de Ascenso
+                                </span>
+                            </button>
+                            <button class="tab-button" data-tab="level">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-arrows-alt-h fa-fw"></i>
+                                    Vuelo Recto y Nivelado
+                                </span>
+                            </button>
+                            <button class="tab-button" data-tab="graph">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-chart-bar fa-fw"></i>
+                                    Gráficos Interactivos
+                                </span>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab de Cálculo de Despegue, ROC y Aterrizaje -->
+            <div id="takeoff" class="tab-content active bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-plane-departure text-blue-500 mr-3"></i>
+                        Cálculo de Despegue y Aterrizaje
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2">Calcula distancias de despegue, aterrizaje y tasa de ascenso.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="input-group">
+                        <label for="takeoffAltitude1" class="block text-sm font-medium mb-2">Altitud de la pista de despegue (ft):</label>
+                        <input type="number" id="takeoffAltitude1" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="windSpeed0" class="block text-sm font-medium mb-2">Intensidad del Viento (nudos):</label>
+                        <input type="number" id="windSpeed0" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="landingAltitude" class="block text-sm font-medium mb-2">Altitud de la pista de aterrizaje (ft):</label>
+                        <input type="number" id="landingAltitude" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="temperature1" class="block text-sm font-medium mb-2">Temperatura (°C):</label>
+                        <input type="number" id="temperature1" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <button onclick="handleUserInput()" class="flight-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+                        <i class="fas fa-calculator mr-2"></i>
+                        Calcular
+                    </button>
+                </div>
+
+                <div class="result-display mt-6">
+                    <h3 class="text-lg font-semibold mb-3">Resultados:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Recorrido en tierra:</span>
+                                <span><span id="groundRunResultFeet" class="font-bold text-blue-600">0</span> ft (<span id="groundRunResultMeters" class="font-bold text-blue-600">0</span> m)</span>
+                            </p>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Total para superar obstáculo:</span>
+                                <span><span id="totalToClearResultFeet" class="font-bold text-blue-600">0</span> ft (<span id="totalToClearResultMeters" class="font-bold text-blue-600">0</span> m)</span>
+                            </p>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Rate of Climb:</span>
+                                <span><span id="rocFeetPerMinute" class="font-bold text-blue-600">0</span> ft/min (<span id="rocMetersPerMinute" class="font-bold text-blue-600">0</span> m/min)</span>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Rodaje en tierra (aterrizaje):</span>
+                                <span><span id="landingGroundRollResultFeet" class="font-bold text-blue-600">0</span> ft (<span id="landingGroundRollResultMeters" class="font-bold text-blue-600">0</span> m)</span>
+                            </p>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Total para superar obstáculo (aterrizaje):</span>
+                                <span><span id="landingTotalToClearResultFeet" class="font-bold text-blue-600">0</span> ft (<span id="landingTotalToClearResultMeters" class="font-bold text-blue-600">0</span> m)</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab de Cálculo de Ascenso -->
+            <div id="climb" class="tab-content bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-chart-line text-blue-500 mr-3"></i>
+                        Cálculo de Ascenso
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2">Calcula tiempo, distancia y combustible necesarios para el ascenso.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="input-group">
+                        <label for="speedUnit" class="block text-sm font-medium mb-2">Unidad de Velocidad:</label>
+                        <select id="speedUnit" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                            <option value="knots">Nudos</option>
+                            <option value="mph">Millas por hora</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="takeoffAltitude2" class="block text-sm font-medium mb-2">Altitud de Despegue (ft):</label>
+                        <input type="number" id="takeoffAltitude2" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="cruiseAltitude" class="block text-sm font-medium mb-2">Altitud de Crucero (ft):</label>
+                        <input type="number" id="cruiseAltitude" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="rpm" class="block text-sm font-medium mb-2">Potencia en RPM:</label>
+                        <input type="number" id="rpm" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="climbSpeed" class="block text-sm font-medium mb-2">Velocidad de Ascenso:</label>
+                        <input type="number" id="climbSpeed" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="fuelFlow" class="block text-sm font-medium mb-2">Flujo de Combustible (GPH):</label>
+                        <input type="number" id="fuelFlow" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="temperature2" class="block text-sm font-medium mb-2">Temperatura (°C):</label>
+                        <input type="number" id="temperature2" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="windSpeed1" class="block text-sm font-medium mb-2">Velocidad del Viento (nudos):</label>
+                        <input type="number" id="windSpeed1" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <button onclick="calculateClimb()" class="flight-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+                        <i class="fas fa-calculator mr-2"></i>
+                        Calcular Ascenso
+                    </button>
+                </div>
+
+                <div class="result-display mt-6">
+                    <h3 class="text-lg font-semibold mb-3">Resultados:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Distancia de Ascenso:</span>
+                                <span id="climbDistance" class="font-bold text-blue-600">0 NM</span>
+                            </p>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Tiempo de Ascenso:</span>
+                                <span id="climbTime" class="font-bold text-blue-600">0 min</span>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Combustible Utilizado:</span>
+                                <span id="climbFuel" class="font-bold text-blue-600">0 GAL</span>
+                            </p>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Tasa de Ascenso:</span>
+                                <span id="climbRate" class="font-bold text-blue-600">0 ft/min</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab de Vuelo Recto y Nivelado -->
+            <div id="level" class="tab-content bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-arrows-alt-h text-blue-500 mr-3"></i>
+                        Vuelo Recto y Nivelado
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2">Calcula tiempo, consumo de combustible y corrección por viento.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="input-group">
+                        <label for="windDirection" class="block text-sm font-medium mb-2">Dirección del Viento (grados):</label>
+                        <input type="number" id="windDirection" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="windSpeed2" class="block text-sm font-medium mb-2">Velocidad del Viento (nudos):</label>
+                        <input type="number" id="windSpeed2" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="heading" class="block text-sm font-medium mb-2">Rumbo (grados):</label>
+                        <input type="number" id="heading" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="temperature3" class="block text-sm font-medium mb-2">Temperatura (°C):</label>
+                        <input type="number" id="temperature3" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="power" class="block text-sm font-medium mb-2">Potencia del Motor (RPM):</label>
+                        <input type="number" id="power" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="indicatedSpeed" class="block text-sm font-medium mb-2">Velocidad Indicada (KIAS):</label>
+                        <input type="number" id="indicatedSpeed" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="altitude" class="block text-sm font-medium mb-2">Altitud (ft):</label>
+                        <input type="number" id="altitude" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="distance" class="block text-sm font-medium mb-2">Distancia Total (millas náuticas):</label>
+                        <input type="number" id="distance" value="0" class="flight-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <button onclick="calculateLevelFlight()" id="calculateButton" class="flight-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+                        <i class="fas fa-calculator mr-2"></i>
+                        Calcular Vuelo Recto y Nivelado
+                    </button>
+                </div>
+
+                <div class="result-display mt-6">
+                    <h3 class="text-lg font-semibold mb-3">Resultados:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Tiempo de Vuelo:</span>
+                                <span id="flightTime" class="font-bold text-blue-600">0 min</span>
+                            </p>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Consumo Total de Combustible:</span>
+                                <span id="fuelConsumption" class="font-bold text-blue-600">0 GAL</span>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Corrección de Rumbo por Viento:</span>
+                                <span id="windCorrection" class="font-bold text-blue-600">0°</span>
+                            </p>
+                            <p class="flex justify-between border-b pb-2 mb-2">
+                                <span class="font-medium">Velocidad GS:</span>
+                                <span><span id="groundSpeedKnots" class="font-bold text-blue-600">0</span> nudos (<span id="groundSpeedMiles" class="font-bold text-blue-600">0</span> millas/hora)</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab de Gráficos Interactivos -->
+            <div id="graph" class="tab-content bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-chart-bar text-blue-500 mr-3"></i>
+                        Gráficos Interactivos
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2">Visualiza los datos de vuelo de forma gráfica.</p>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <canvas id="myChart" width="400" height="250"></canvas>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="flight-card p-4">
+                        <h3 class="text-lg font-semibold mb-2 flex items-center">
+                            <i class="fas fa-plane text-blue-500 mr-2"></i>
+                            Rendimiento
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">Visualiza el rendimiento de la aeronave en diferentes condiciones.</p>
+                    </div>
+                    <div class="flight-card p-4">
+                        <h3 class="text-lg font-semibold mb-2 flex items-center">
+                            <i class="fas fa-gas-pump text-blue-500 mr-2"></i>
+                            Consumo
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">Analiza el consumo de combustible según altitud y potencia.</p>
+                    </div>
+                    <div class="flight-card p-4">
+                        <h3 class="text-lg font-semibold mb-2 flex items-center">
+                            <i class="fas fa-wind text-blue-500 mr-2"></i>
+                            Viento
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">Efectos del viento en la velocidad y rumbo de la aeronave.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="flight-card p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-book text-blue-500 mr-2"></i>
+                        Para Estudiantes
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">Herramienta educativa para comprender los cálculos de vuelo y planificación.</p>
+                </div>
+                <div class="flight-card p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-plane-departure text-blue-500 mr-2"></i>
+                        Para Pilotos
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">Cálculos precisos para la planificación de vuelo y navegación aérea.</p>
+                </div>
+                <div class="flight-card p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-chalkboard-teacher text-blue-500 mr-2"></i>
+                        Para Instructores
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">Material didáctico para la enseñanza de conceptos de vuelo.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <br>
+    <br>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-900 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <!-- Columna 1: Logo y Redes Sociales -->
+                <div class="flex flex-col items-center md:items-start">
+                    <img src="images/logo.png" alt="Hernancius Aviator" class="h-14 mb-6">
+                    <div class="flex space-x-8 mt-5">
+                        <a href="https://www.facebook.com/hr.aviator/" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors duration-300">
+                            <i class="fab fa-facebook-f fa-2x"></i>
+                        </a>
+                        <a href="https://www.instagram.com/hernanciusaviator/" target="_blank" class="text-pink-400 hover:text-pink-300 transition-colors duration-300">
+                            <i class="fab fa-instagram fa-2x"></i>
+                        </a>
+                        <a href="https://x.com/hernanciusaviat?t" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors duration-300">
+                            <i class="fab fa-twitter fa-2x"></i>
+                        </a>
+                        <a href="https://www.twitch.tv/hernancius_aviator" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors duration-300">
+                            <i class="fab fa-twitch fa-2x"></i>
+                        </a>
+                        <a href="http://www.youtube.com/@hernancius_aviator" target="_blank" class="text-red-500 hover:text-red-400 transition-colors duration-300">
+                            <i class="fab fa-youtube fa-2x"></i>
+                        </a>
+                    </div>
+                    <br>
+                </div>
+                <!-- Columna 2: Navegación -->
+                <div class="flex flex-col justify-center">
+                    <h3 class="text-xl font-bold mb-4 text-gray-300">Navegación</h3>
+                    <br>
+                    <ul class="space-y-2">
+                        <li><a href="#inicio" class="hover:text-gray-300 transition-colors duration-300">Inicio</a></li>
+                        <li><a href="#sobre-mi" class="hover:text-gray-300 transition-colors duration-300">Sobre Mí</a></li>
+                        <li><a href="#servicios" class="hover:text-gray-300 transition-colors duration-300">Servicios</a></li>
+                        <li><a href="flightcal.html" class="hover:text-gray-300 transition-colors duration-300">FlightCal</a></li>
+                        <li><a href="#" class="hover:text-gray-300 transition-colors duration-300">Conversión</a></li>
+                        <li><a href="#blog" class="hover:text-gray-300 transition-colors duration-300">Blog</a></li>
+                        <li><a href="#contacto" class="hover:text-gray-300 transition-colors duration-300">Contacto</a></li>
+                    </ul>
+                </div>
+    
+                <!-- Columna 3: Contacto y Política -->
+                <div class="flex flex-col justify-center">
+                    <h3 class="text-xl font-bold mb-4 text-gray-300">Contacto</h3>
+                    <p class="mb-2">Email: <a href="mailto:contacto@hernancius-aviator.com" class="text-blue-400 hover:text-blue-300 transition-colors duration-300">contacto@hernancius-aviator.com</a>
+                    </p>
+    
+                    <h3 class="text-xl font-bold mt-8 mb-4 text-gray-300">Política</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/politica-privacidad" class="hover:text-gray-300 transition-colors duration-300">Política de Privacidad</a></li>
+                        <li><a href="/terminos-servicio" class="hover:text-gray-300 transition-colors duration-300">Términos de Servicio</a></li>
+                    </ul>
+                </div>
+            </div>
+            <br>
+            <hr>
+            <br>
+            <!-- Segmento de Derechos Reservados -->
+            <div class="border-t border-gray-700 mt-12 pt-8 text-left text-gray-400">
+                <p> 2023 Hernancius Aviator. Todos los derechos reservados.</p>
+            </div>
+            <br>
+        </div>
+    </footer>
+
+    <script>
+        // Agregar event listeners a los botones de tabs
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    showTab(tabId);
+                });
+            });
+            
+            // Inicializar gráfico
+            initializeChart();
+        });
+
+        function showTab(tabId) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Desactivar todos los botones
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Mostrar el tab seleccionado
+            document.getElementById(tabId).classList.add('active');
+            
+            // Activar el botón correspondiente
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+
+            // Si el tab de gráficos es seleccionado, renderizar el gráfico
+            if (tabId === 'graph') {
+                renderChart();
+            }
+        }
+
+        function initializeChart() {
+            // Crear datos de ejemplo para el gráfico
+            const ctx = document.getElementById('myChart').getContext('2d');
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['0', '5000', '10000', '15000', '20000', '25000'],
+                    datasets: [{
+                        label: 'Velocidad vs Altitud',
+                        data: [120, 118, 115, 110, 105, 100],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Rendimiento de la Aeronave',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Velocidad (KTAS)'
+                            },
+                            beginAtZero: false
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Altitud (ft)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderChart() {
+            // Actualizar el gráfico con datos calculados
+            // Esto es solo un ejemplo, en una implementación real se usarían datos reales
+            const takeoffAlt = parseFloat(document.getElementById('takeoffAltitude1').value) || 0;
+            const cruiseAlt = parseFloat(document.getElementById('cruiseAltitude').value) || 10000;
+            const temp = parseFloat(document.getElementById('temperature1').value) || 15;
+            
+            // Generar datos de ejemplo basados en la entrada del usuario
+            const altitudes = [];
+            const speeds = [];
+            const fuelConsumption = [];
+            
+            const altStep = (cruiseAlt - takeoffAlt) / 5;
+            for (let i = 0; i <= 5; i++) {
+                const alt = takeoffAlt + (altStep * i);
+                altitudes.push(alt.toFixed(0));
+                
+                // Velocidad simulada basada en altitud y temperatura
+                const speed = 120 - (alt / 10000 * 20) + (temp / 10);
+                speeds.push(Math.max(90, Math.min(150, speed)));
+                
+                // Consumo de combustible simulado
+                const fuel = 12 - (alt / 10000 * 2) + (temp / 20);
+                fuelConsumption.push(Math.max(8, Math.min(15, fuel)));
+            }
+            
+            // Actualizar el gráfico
+            window.myChart.data.labels = altitudes;
+            window.myChart.data.datasets[0].data = speeds;
+            
+            // Añadir un segundo conjunto de datos para el consumo de combustible
+            if (window.myChart.data.datasets.length < 2) {
+                window.myChart.data.datasets.push({
+                    label: 'Consumo de Combustible (GPH)',
+                    data: fuelConsumption,
+                    borderColor: 'rgb(16, 185, 129)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                    yAxisID: 'y1'
+                });
+                
+                // Añadir un segundo eje Y para el consumo de combustible
+                window.myChart.options.scales.y1 = {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Combustible (GPH)'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                };
+            } else {
+                window.myChart.data.datasets[1].data = fuelConsumption;
+            }
+            
+            window.myChart.update();
+        }
+
+        function handleUserInput() {
+            const takeoffAltitude = parseFloat(document.getElementById('takeoffAltitude1').value) || 0;
+            const windSpeed = parseFloat(document.getElementById('windSpeed0').value) || 0;
+            const landingAltitude = parseFloat(document.getElementById('landingAltitude').value) || 0;
+            const temperature = parseFloat(document.getElementById('temperature1').value) || 15;
+            
+            // Cálculos simulados para distancias de despegue y aterrizaje
+            // En una implementación real, estos cálculos serían más complejos y precisos
+            
+            // Recorrido en tierra (despegue)
+            const groundRun = 800 + (takeoffAltitude / 1000 * 100) + (temperature * 10) - (windSpeed * 15);
+            const groundRunMeters = groundRun * 0.3048;
+            
+            // Total para superar obstáculo de 50 ft
+            const totalToClear = 1500 + (takeoffAltitude / 1000 * 150) + (temperature * 15) - (windSpeed * 25);
+            const totalToClearMeters = totalToClear * 0.3048;
+            
+            // Rate of Climb
+            const roc = 700 - (takeoffAltitude / 1000 * 50) - (temperature * 10);
+            const rocMeters = roc * 0.3048;
+            
+            // Aterrizaje - rodaje en tierra
+            const landingGroundRoll = 600 + (landingAltitude / 1000 * 80) + (temperature * 8) - (windSpeed * 12);
+            const landingGroundRollMeters = landingGroundRoll * 0.3048;
+            
+            // Aterrizaje - total para superar obstáculo de 50 ft
+            const landingTotalToClear = 1200 + (landingAltitude / 1000 * 120) + (temperature * 12) - (windSpeed * 20);
+            const landingTotalToClearMeters = landingTotalToClear * 0.3048;
+            
+            // Actualizar resultados en la interfaz
+            document.getElementById('groundRunResultFeet').textContent = Math.round(groundRun);
+            document.getElementById('groundRunResultMeters').textContent = Math.round(groundRunMeters);
+            
+            document.getElementById('totalToClearResultFeet').textContent = Math.round(totalToClear);
+            document.getElementById('totalToClearResultMeters').textContent = Math.round(totalToClearMeters);
+            
+            document.getElementById('rocFeetPerMinute').textContent = Math.round(roc);
+            document.getElementById('rocMetersPerMinute').textContent = Math.round(rocMeters);
+            
+            document.getElementById('landingGroundRollResultFeet').textContent = Math.round(landingGroundRoll);
+            document.getElementById('landingGroundRollResultMeters').textContent = Math.round(landingGroundRollMeters);
+            
+            document.getElementById('landingTotalToClearResultFeet').textContent = Math.round(landingTotalToClear);
+            document.getElementById('landingTotalToClearResultMeters').textContent = Math.round(landingTotalToClearMeters);
+        }
+
+        function calculateClimb() {
+            const speedUnit = document.getElementById('speedUnit').value;
+            const takeoffAltitude = parseFloat(document.getElementById('takeoffAltitude2').value) || 0;
+            const cruiseAltitude = parseFloat(document.getElementById('cruiseAltitude').value) || 0;
+            const rpm = parseFloat(document.getElementById('rpm').value) || 0;
+            const climbSpeed = parseFloat(document.getElementById('climbSpeed').value) || 0;
+            const fuelFlow = parseFloat(document.getElementById('fuelFlow').value) || 0;
+            const temperature = parseFloat(document.getElementById('temperature2').value) || 0;
+            const windSpeed = parseFloat(document.getElementById('windSpeed1').value) || 0;
+            
+            // Calcular la diferencia de altitud
+            const altitudeDifference = cruiseAltitude - takeoffAltitude;
+            
+            // Calcular tasa de ascenso basada en RPM y temperatura
+            const climbRate = 500 + (rpm / 100) - (temperature * 2);
+            
+            // Calcular tiempo de ascenso (en minutos)
+            const climbTime = (altitudeDifference / climbRate);
+            
+            // Calcular distancia de ascenso
+            // Velocidad en nudos o mph según la selección
+            const speedInKnots = (speedUnit === 'knots') ? climbSpeed : (climbSpeed * 0.868976);
+            // Distancia = velocidad * tiempo (en horas)
+            const distance = (speedInKnots * (climbTime / 60)) + (windSpeed * 0.1);
+            
+            // Calcular consumo de combustible
+            const fuel = (fuelFlow * (climbTime / 60));
+            
+            // Actualizar resultados en la interfaz
+            document.getElementById('climbDistance').textContent = distance.toFixed(1) + ' NM';
+            document.getElementById('climbTime').textContent = climbTime.toFixed(1) + ' min';
+            document.getElementById('climbFuel').textContent = fuel.toFixed(1) + ' GAL';
+            document.getElementById('climbRate').textContent = climbRate.toFixed(0) + ' ft/min';
+        }
+
+        function calculateLevelFlight() {
+            const windDirection = parseFloat(document.getElementById('windDirection').value) || 0;
+            const windSpeed = parseFloat(document.getElementById('windSpeed2').value) || 0;
+            const heading = parseFloat(document.getElementById('heading').value) || 0;
+            const temperature = parseFloat(document.getElementById('temperature3').value) || 0;
+            const power = parseFloat(document.getElementById('power').value) || 0;
+            const indicatedSpeed = parseFloat(document.getElementById('indicatedSpeed').value) || 0;
+            const altitude = parseFloat(document.getElementById('altitude').value) || 0;
+            const distance = parseFloat(document.getElementById('distance').value) || 0;
+            
+            // Calcular el ángulo relativo del viento
+            const relativeWindAngle = Math.abs((windDirection - heading + 180) % 360 - 180);
+            
+            // Calcular componente del viento
+            const headwind = windSpeed * Math.cos(relativeWindAngle * Math.PI / 180);
+            const crosswind = windSpeed * Math.sin(relativeWindAngle * Math.PI / 180);
+            
+            // Calcular corrección de rumbo por viento
+            const windCorrection = Math.atan2(crosswind, indicatedSpeed) * (180 / Math.PI);
+            
+            // Calcular velocidad sobre el terreno (GS)
+            const groundSpeed = indicatedSpeed - headwind;
+            
+            // Calcular tiempo de vuelo en minutos
+            const flightTime = (distance / groundSpeed) * 60;
+            
+            // Calcular consumo de combustible basado en potencia, temperatura y altitud
+            const fuelConsumptionPerHour = 8 + (power / 100) + (temperature / 20) - (altitude / 10000);
+            const totalFuelConsumption = fuelConsumptionPerHour * (flightTime / 60);
+            
+            // Actualizar resultados en la interfaz
+            document.getElementById('flightTime').textContent = flightTime.toFixed(1) + ' min';
+            document.getElementById('fuelConsumption').textContent = totalFuelConsumption.toFixed(1) + ' GAL';
+            document.getElementById('windCorrection').textContent = windCorrection.toFixed(1) + '°';
+            document.getElementById('groundSpeedKnots').textContent = groundSpeed.toFixed(1);
+            document.getElementById('groundSpeedMiles').textContent = (groundSpeed * 1.15078).toFixed(1);
+        }
+
+        // Función para alternar entre temas
+        function toggleTheme() {
+            const isDarkMode = document.documentElement.classList.toggle('dark');
+            const themeLabel = document.getElementById('theme-label');
+            if (isDarkMode) {
+                themeLabel.textContent = 'Dark';
+            } else {
+                themeLabel.textContent = 'Light';
+            }
+
+            // Guardar preferencia en localStorage
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Función que se ejecuta al cargar la página
+        window.onload = function() {
+            // Verificar tema guardado
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-toggle').checked = true;
+                document.getElementById('theme-label').textContent = 'Dark';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-toggle').checked = false;
+                document.getElementById('theme-label').textContent = 'Light';
+            }
+        };
+
+        // Función para alternar el menú desplegable en móviles
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('-translate-x-full');
+        }
+    </script>
+</body>
+
+</html>

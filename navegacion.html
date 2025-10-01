@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navegación Aérea - Hernancius Aviator</title>
+    <link href="dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <script src="js/weather-decoder.js"></script>
+    <script src="js/weather-api.js"></script>
+    <link href="css/chart-icons.css" rel="stylesheet">
+    <style>
+        .content-card {
+            transition: transform 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .interactive-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .interactive-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 0.5rem;
+        }
+        .weather-info {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .weather-info.dark {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .weather-detail {
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .weather-detail h5 {
+            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .weather-detail.dark {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        .weather-phenomena {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            margin: 0.25rem;
+            border-radius: 0.25rem;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        .hero-section {
+            position: relative;
+            height: 300px;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                url('https://images.unsplash.com/photo-1684189994896-d3c2efd0e6b2?auto=format&fit=crop&w=1920&h=500&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .chart-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            background-color: rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 1.5rem;
+        }
+
+        .chart-preview.approach {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .chart-preview.enroute {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .chart-preview.airport {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+        .chart-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            border-radius: 50%;
+        }
+        .chart-icon.approach {
+            background-color: #3b82f6;
+        }
+        .chart-icon.enroute {
+            background-color: #10b981;
+        }
+        .chart-icon.airport {
+            background-color: #f59e0b;
+        }
+    </style>
+</head>
+
+<body class="bg-light-background text-light-text dark:bg-dark-background dark:text-dark-text">
+    <!-- Header -->
+    <header class="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 fixed w-full z-40 p-4 flex justify-between items-center transition-all duration-300">
+        <!-- Logo -->
+        <div class="text-2xl font-bold">
+            <i class="fas fa-plane fa-2x"></i>
+        </div>
+        <!-- Menú para dispositivos grandes -->
+        <nav class="hidden md:flex items-center space-x-8 text-lg">
+            <a href="index.html" class="hover:text-blue-500">Inicio</a>
+            <a href="flightcal.html" class="hover:text-blue-500">FlightCal</a>
+            <a href="conversion.html" class="hover:text-blue-500">Conversión</a>
+            <!-- Botón de alternancia de tema -->
+            <div class="flex items-center ml-4">
+                <label for="theme-toggle" class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="theme-toggle" class="sr-only" onclick="toggleTheme()" />
+                    <div class="w-12 h-6 bg-gray-200 rounded-full p-1 flex items-center dark:bg-gray-600">
+                        <span class="w-4 h-4 bg-white rounded-full shadow-md transform transition-transform dark:translate-x-6"></span>
+                    </div>
+                </label>
+                <span id="theme-label" class="ml-3 text-gray-700 dark:text-gray-300">Light</span>
+            </div>
+        </nav>
+        <!-- Botón de menú móvil -->
+        <button onclick="toggleMenu()" class="text-gray-600 dark:text-gray-300 md:hidden focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </header>
+
+    <!-- Menú móvil -->
+    <div id="mobile-menu" class="fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 bg-white dark:bg-gray-800 w-64 z-50 md:hidden">
+        <div class="p-6">
+            <button onclick="toggleMenu()" class="absolute top-4 right-4">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <nav class="mt-8">
+                <ul class="space-y-4">
+                    <li><a href="index.html" class="block hover:text-blue-500">Inicio</a></li>
+                    <li><a href="flightcal.html" class="block hover:text-blue-500">FlightCal</a></li>
+                    <li><a href="conversion.html" class="block hover:text-blue-500">Conversión</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <main class="pt-20">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="container mx-auto px-4">
+                <h1 class="text-4xl font-bold mb-4">Navegación Aérea</h1>
+                <p class="text-xl">Herramientas y recursos para la planificación de vuelo</p>
+            </div>
+        </div>
+
+        <!-- Contenido Principal -->
+        <section class="py-16">
+            <div class="container mx-auto px-4">
+                <!-- Cartas Aeronáuticas Interactivas -->
+                <div class="mb-16">
+                    <h2 class="text-3xl font-bold mb-8">Cartas Aeronáuticas Interactivas</h2>
+                    
+                    <!-- Tabs de navegación -->
+                    <div class="flex flex-wrap gap-4 mb-8">
+                        <button class="tab-button active" onclick="showTab('approach')">
+                            <i class="fas fa-plane-arrival mr-2"></i>Carta de Aproximación
+                        </button>
+                        <button class="tab-button" onclick="showTab('enroute')">
+                            <i class="fas fa-route mr-2"></i>Carta en Ruta
+                        </button>
+                        <button class="tab-button" onclick="showTab('airport')">
+                            <i class="fas fa-plane mr-2"></i>Plano de Aeródromo
+                        </button>
+                    </div>
+
+                    <!-- Contenido de las tabs -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+                        <!-- Tab de Aproximación -->
+                        <div id="approach" class="tab-content active">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Carta de Aproximación ILS</h3>
+                                    <div class="mb-4">
+                                        <div class="chart-preview approach">
+                                            <i class="fas fa-plane-arrival fa-3x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Elementos Clave</h3>
+                                    <div class="space-y-4">
+                                        <div class="interactive-section" data-delay="200">
+                                            <h4 class="font-semibold text-blue-500">Altitudes Mínimas</h4>
+                                            <p class="text-gray-600 dark:text-gray-300">
+                                                - MSA (Altitud Mínima de Sector): 3000 ft<br>
+                                                - DA/DH (Altitud/Altura de Decisión): 200 ft
+                                            </p>
+                                        </div>
+                                        <div class="interactive-section" data-delay="400">
+                                            <h4 class="font-semibold text-blue-500">Curso Final</h4>
+                                            <p class="text-gray-600 dark:text-gray-300">
+                                                - Curso del localizador: 270°<br>
+                                                - Pendiente de planeo: 3°
+                                            </p>
+                                        </div>
+                                        <div class="interactive-section" data-delay="600">
+                                            <h4 class="font-semibold text-blue-500">Frecuencias</h4>
+                                            <p class="text-gray-600 dark:text-gray-300">
+                                                - ILS: 109.90 MHz<br>
+                                                - Torre: 118.75 MHz
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab de En Ruta -->
+                        <div id="enroute" class="tab-content">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Carta en Ruta</h3>
+                                    <div class="mb-4">
+                                        <div class="chart-preview enroute">
+                                            <i class="fas fa-route fa-3x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Planificador de Ruta</h3>
+                                    <div class="space-y-4">
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium mb-2">Origen</label>
+                                            <input type="text" id="origin" class="w-full p-2 border rounded dark:bg-gray-700" placeholder="ICAO del aeropuerto">
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium mb-2">Destino</label>
+                                            <input type="text" id="destination" class="w-full p-2 border rounded dark:bg-gray-700" placeholder="ICAO del aeropuerto">
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium mb-2">Waypoints</label>
+                                            <input type="text" id="waypoints" class="w-full p-2 border rounded dark:bg-gray-700" placeholder="Separados por comas">
+                                        </div>
+                                        <button onclick="calcularRuta()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors">
+                                            Calcular Ruta
+                                        </button>
+                                        <div id="routeInfo" class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hidden">
+                                            <h4 class="font-semibold mb-2">Información de la Ruta</h4>
+                                            <div id="routeDetails"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab de Aeródromo -->
+                        <div id="airport" class="tab-content">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Plano de Aeródromo</h3>
+                                    <div class="mb-4">
+                                        <div class="chart-preview airport">
+                                            <i class="fas fa-plane fa-3x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Información del Aeródromo</h3>
+                                    <div class="space-y-4">
+                                        <div class="interactive-section" data-delay="200">
+                                            <h4 class="font-semibold text-blue-500">Pistas</h4>
+                                            <p class="text-gray-600 dark:text-gray-300">
+                                                - 27/09: 3000m x 45m<br>
+                                                - Superficie: Asfalto
+                                            </p>
+                                        </div>
+                                        <div class="interactive-section" data-delay="400">
+                                            <h4 class="font-semibold text-blue-500">Elevación</h4>
+                                            <p class="text-gray-600 dark:text-gray-300">
+                                                - Campo: 235 ft<br>
+                                                - TDZ RWY 27: 228 ft
+                                            </p>
+                                        </div>
+                                        <div class="interactive-section" data-delay="600">
+                                            <h4 class="font-semibold text-blue-500">Servicios</h4>
+                                            <p class="text-gray-600 dark:text-gray-300">
+                                                - ATC H24<br>
+                                                - ILS CAT I RWY 27
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nueva sección: Meteorología y METAR/TAF -->
+                <div class="mb-16">
+                    <h2 class="text-3xl font-bold mb-8">Meteorología Aeronáutica</h2>
+                    
+                    <!-- Tabs de meteorología -->
+                    <div class="flex flex-wrap gap-4 mb-8">
+                        <button class="tab-button active" onclick="showWeatherTab('metar')">
+                            <i class="fas fa-cloud mr-2"></i>Decodificador METAR/TAF
+                        </button>
+                        <button class="tab-button" onclick="showWeatherTab('weather-map')">
+                            <i class="fas fa-map-marked-alt mr-2"></i>Carta Meteorológica
+                        </button>
+                    </div>
+
+                    <!-- Contenido meteorológico -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+                        <!-- Tab METAR/TAF -->
+                        <div id="metar" class="weather-tab-content active">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Decodificador METAR/TAF</h3>
+                                    <div class="space-y-4">
+                                        <!-- Búsqueda de Aeropuerto -->
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium mb-2">Código ICAO del Aeropuerto</label>
+                                            <div class="flex gap-2">
+                                                <div class="relative flex-1">
+                                                    <input type="text" id="icao-input" 
+                                                        class="w-full p-2 border rounded dark:bg-gray-700" 
+                                                        placeholder="Ej: SCEL"
+                                                        onkeypress="handleKeyPress(event)"
+                                                        maxlength="4">
+                                                    <div id="airport-suggestions" class="hidden absolute w-full mt-1 bg-white dark:bg-gray-800 border rounded-md shadow-lg z-10">
+                                                        <!-- Las sugerencias se agregarán dinámicamente -->
+                                                    </div>
+                                                </div>
+                                                <button onclick="getMetar()" id="metar-btn"
+                                                    class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors">
+                                                    <i class="fas fa-cloud mr-2"></i>METAR
+                                                </button>
+                                                <button onclick="getTaf()" id="taf-btn"
+                                                    class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors">
+                                                    <i class="fas fa-clock mr-2"></i>TAF
+                                                </button>
+                                            </div>
+                                            <div id="loading" class="hidden mt-2 text-sm text-blue-500">
+                                                <i class="fas fa-spinner fa-spin mr-2"></i>Cargando...
+                                            </div>
+                                        </div>
+
+                                        <!-- Aeropuertos Favoritos -->
+                                        <div id="favorite-airports" class="mb-4">
+                                            <h4 class="text-sm font-medium mb-2">Aeropuertos Favoritos</h4>
+                                            <div class="flex flex-wrap gap-2" id="favorite-airports-list">
+                                                <!-- Los favoritos se agregarán dinámicamente -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Búsquedas Recientes -->
+                                        <div id="recent-searches" class="mb-4">
+                                            <h4 class="text-sm font-medium mb-2">Búsquedas Recientes</h4>
+                                            <div class="flex flex-wrap gap-2" id="recent-searches-list">
+                                                <!-- Las búsquedas recientes se agregarán dinámicamente -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Información del Aeropuerto -->
+                                        <div id="station-info" class="hidden weather-detail">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <h5>Información del Aeropuerto</h5>
+                                                <button id="favorite-btn" class="text-yellow-400 hover:text-yellow-300 transition-colors">
+                                                    <i class="far fa-star"></i>
+                                                </button>
+                                            </div>
+                                            <div id="station-content"></div>
+                                        </div>
+
+                                        <!-- Reporte Meteorológico -->
+                                        <div id="weather-info" class="weather-info hidden">
+                                            <div class="mb-4">
+                                                <h4 class="font-semibold mb-2">Reporte Original</h4>
+                                                <pre id="weather-raw" class="text-sm p-2 bg-gray-100 dark:bg-gray-800 rounded overflow-x-auto"></pre>
+                                            </div>
+                                            <div id="weather-decoded" class="space-y-4"></div>
+                                        </div>
+
+                                        <!-- Gráficos de Tendencias -->
+                                        <div id="weather-trends" class="hidden">
+                                            <h4 class="font-semibold mb-4">Tendencias Meteorológicas</h4>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div class="weather-detail">
+                                                    <h5>Temperatura</h5>
+                                                    <canvas id="temperature-chart"></canvas>
+                                                </div>
+                                                <div class="weather-detail">
+                                                    <h5>Viento</h5>
+                                                    <canvas id="wind-chart"></canvas>
+                                                </div>
+                                                <div class="weather-detail">
+                                                    <h5>Visibilidad</h5>
+                                                    <canvas id="visibility-chart"></canvas>
+                                                </div>
+                                                <div class="weather-detail">
+                                                    <h5>Presión</h5>
+                                                    <canvas id="pressure-chart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Guía de Interpretación</h3>
+                                    <div class="space-y-4">
+                                        <div class="interactive-section" data-delay="200">
+                                            <h4 class="font-semibold text-blue-500">Elementos METAR</h4>
+                                            <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
+                                                <li>ICAO - Identificador del aeropuerto</li>
+                                                <li>Hora - Hora de observación en UTC</li>
+                                                <li>Viento - Dirección y velocidad</li>
+                                                <li>Visibilidad - En metros o kilómetros</li>
+                                                <li>Fenómenos - Lluvia, nieve, niebla, etc.</li>
+                                                <li>Nubes - Tipo y altura</li>
+                                                <li>Temperatura y punto de rocío</li>
+                                                <li>QNH - Presión atmosférica</li>
+                                            </ul>
+                                        </div>
+                                        <div class="interactive-section" data-delay="400">
+                                            <h4 class="font-semibold text-blue-500">Elementos TAF</h4>
+                                            <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
+                                                <li>Período de validez</li>
+                                                <li>Cambios temporales (TEMPO)</li>
+                                                <li>Cambios graduales (BECMG)</li>
+                                                <li>Probabilidad de cambios (PROB)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Carta Meteorológica -->
+                        <div id="weather-map" class="weather-tab-content hidden">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Carta Meteorológica Interactiva</h3>
+                                    <div id="map" class="mb-4"></div>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Capas Disponibles</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center space-x-2">
+                                            <input type="checkbox" id="clouds-layer" class="form-checkbox" onchange="toggleMapLayer('clouds')">
+                                            <label for="clouds-layer">Nubosidad</label>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <input type="checkbox" id="precipitation-layer" class="form-checkbox" onchange="toggleMapLayer('precipitation')">
+                                            <label for="precipitation-layer">Precipitación</label>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <input type="checkbox" id="wind-layer" class="form-checkbox" onchange="toggleMapLayer('wind')">
+                                            <label for="wind-layer">Vientos</label>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <input type="checkbox" id="pressure-layer" class="form-checkbox" onchange="toggleMapLayer('pressure')">
+                                            <label for="pressure-layer">Presión</label>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8">
+                                        <h4 class="font-semibold mb-2">Leyenda</h4>
+                                        <div id="map-legend" class="text-sm space-y-2">
+                                            <!-- La leyenda se actualizará dinámicamente según las capas activas -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartas Aeronáuticas -->
+                <section class="mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Cartas Aeronáuticas</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Carta de Aproximación -->
+                        <div class="content-card">
+                            <div class="chart-preview approach">
+                                <i class="fas fa-plane-arrival fa-3x"></i>
+                            </div>
+                            <div class="p-4">
+                                <div class="chart-icon approach">
+                                    <i class="fas fa-plane-arrival"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-2">Cartas de Aproximación</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                                    Procedimientos detallados para aproximación y aterrizaje seguro.
+                                </p>
+                                <button class="btn-primary" onclick="showChartTab('approach')">
+                                    <i class="fas fa-eye mr-2"></i>Ver Cartas
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Carta en Ruta -->
+                        <div class="content-card">
+                            <div class="chart-preview enroute">
+                                <i class="fas fa-route fa-3x"></i>
+                            </div>
+                            <div class="p-4">
+                                <div class="chart-icon enroute">
+                                    <i class="fas fa-route"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-2">Cartas en Ruta</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                                    Navegación en ruta con aerovías y puntos de referencia.
+                                </p>
+                                <button class="btn-primary" onclick="showChartTab('enroute')">
+                                    <i class="fas fa-eye mr-2"></i>Ver Cartas
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Carta de Aeródromo -->
+                        <div class="content-card">
+                            <div class="chart-preview airport">
+                                <i class="fas fa-plane fa-3x"></i>
+                            </div>
+                            <div class="p-4">
+                                <div class="chart-icon airport">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <br>
+                                <h3 class="text-xl font-semibold mb-2">Cartas de Aeródromo</h3>
+                                <br>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                                    Planos detallados de aeropuertos y sus instalaciones.
+                                </p>
+                                <button class="btn-primary" onclick="showChartTab('airport')">
+                                    <i class="fas fa-eye mr-2"></i>Ver Cartas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Resto del contenido... -->
+            </div>
+        </section>
+    </main>
+
+<br>
+<br>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-900 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <!-- Columna 1: Logo y Redes Sociales -->
+                <div class="flex flex-col items-center md:items-start">
+                    <img src="images/logo.png" alt="Hernancius Aviator" class="h-14 mb-6">
+                    <div class="flex space-x-8 mt-5">
+                        <a href="https://www.facebook.com/hr.aviator/" target="_blank"
+                            class="text-blue-400 hover:text-blue-300 transition-colors duration-300">
+                            <i class="fab fa-facebook-f fa-2x"></i>
+                        </a>
+                        <a href="https://www.instagram.com/hernanciusaviator/" target="_blank"
+                            class="text-pink-400 hover:text-pink-300 transition-colors duration-300">
+                            <i class="fab fa-instagram fa-2x"></i>
+                        </a>
+                        <a href="https://x.com/hernanciusaviat?t" target="_blank"
+                            class="text-blue-400 hover:text-blue-300 transition-colors duration-300">
+                            <i class="fab fa-twitter fa-2x"></i>
+                        </a>
+                        <a href="https://www.twitch.tv/hernancius_aviator" target="_blank"
+                            class="text-purple-400 hover:text-purple-300 transition-colors duration-300">
+                            <i class="fab fa-twitch fa-2x"></i>
+                        </a>
+                        <a href="http://www.youtube.com/@hernancius_aviator" target="_blank"
+                            class="text-red-500 hover:text-red-400 transition-colors duration-300">
+                            <i class="fab fa-youtube fa-2x"></i>
+                        </a>
+                    </div>
+                    <br>
+                </div>
+                <!-- Columna 2: Navegación -->
+                <div class="flex flex-col justify-center">
+                    <h3 class="text-xl font-bold mb-4 text-gray-300">Navegación</h3>
+                    <br>
+                    <ul class="space-y-2">
+                        <li><a href="#inicio" class="hover:text-gray-300 transition-colors duration-300">Inicio</a></li>
+                        <li><a href="#sobre-mi" class="hover:text-gray-300 transition-colors duration-300">Sobre
+                                Mí</a></li>
+                        <li><a href="#servicios" class="hover:text-gray-300 transition-colors duration-300">Servicios</a></li>
+                        <li><a href="flightcal.html" class="hover:text-gray-300 transition-colors duration-300">FlightCal</a></li>
+                        <li><a href="#" class="hover:text-gray-300 transition-colors duration-300">Conversión</a></li>
+                        <li><a href="#blog" class="hover:text-gray-300 transition-colors duration-300">Blog</a></li>
+                        <li><a href="#contacto" class="hover:text-gray-300 transition-colors duration-300">Contacto</a></li>
+                    </ul>
+                </div>
+    
+                <!-- Columna 3: Contacto y Política -->
+                <div class="flex flex-col justify-center">
+                    <h3 class="text-xl font-bold mb-4 text-gray-300">Contacto</h3>
+                    <p class="mb-2">Email: <a href="mailto:contacto@hernancius-aviator.com"
+                            class="text-blue-400 hover:text-blue-300 transition-colors duration-300">contacto@hernancius-aviator.com</a>
+                    </p>
+    
+                    <h3 class="text-xl font-bold mt-8 mb-4 text-gray-300">Política</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/politica-privacidad"
+                                class="hover:text-gray-300 transition-colors duration-300">Política de
+                                Privacidad</a></li>
+                        <li><a href="/terminos-servicio"
+                                class="hover:text-gray-300 transition-colors duration-300">Términos de Servicio</a></li>
+                    </ul>
+                </div>
+            </div>
+            <br>
+            <hr>
+            <br>
+            <!-- Segmento de Derechos Reservados -->
+            <div class="border-t border-gray-700 mt-12 pt-8 text-left text-gray-400">
+                <p> 2023 Hernancius Aviator. Todos los derechos reservados.</p>
+            </div>
+            <br>
+        </div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const isDarkMode = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            document.getElementById('theme-label').textContent = isDarkMode ? 'Dark' : 'Light';
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-label').textContent = 'Dark';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-label').textContent = 'Light';
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('-translate-x-full');
+        }
+
+        // Funciones nuevas
+        function showTab(tabId) {
+            // Ocultar todos los contenidos
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Desactivar todos los botones
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Mostrar el contenido seleccionado
+            document.getElementById(tabId).classList.add('active');
+            
+            // Activar el botón seleccionado
+            document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+        }
+
+        function calcularRuta() {
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+            const waypoints = document.getElementById('waypoints').value;
+
+            if (!origin || !destination) {
+                alert('Por favor, ingrese origen y destino');
+                return;
+            }
+
+            const routeInfo = document.getElementById('routeInfo');
+            const routeDetails = document.getElementById('routeDetails');
+            
+            // Simulación de cálculo de ruta
+            const distance = Math.floor(Math.random() * 500) + 100; // Distancia simulada
+            const time = Math.floor(distance / 120 * 60); // Tiempo estimado basado en velocidad crucero de 120 kts
+
+            routeDetails.innerHTML = `
+                <p class="mb-2"><strong>Distancia Total:</strong> ${distance} NM</p>
+                <p class="mb-2"><strong>Tiempo Estimado:</strong> ${Math.floor(time/60)}h ${time%60}min</p>
+                <p class="mb-2"><strong>Ruta:</strong> ${origin} → ${waypoints ? waypoints + ' → ' : ''}${destination}</p>
+            `;
+
+            routeInfo.classList.remove('hidden');
+        }
+
+        function animateInteractiveSections() {
+            const sections = document.querySelectorAll('.interactive-section');
+            
+            sections.forEach(section => {
+                const delay = section.dataset.delay || 0;
+                setTimeout(() => {
+                    section.classList.add('visible');
+                }, delay);
+            });
+        }
+
+        // Iniciar animaciones cuando se carga la página
+        window.addEventListener('load', animateInteractiveSections);
+
+        // Funciones para meteorología
+        let map = null;
+        let weatherLayers = {};
+
+        function showWeatherTab(tabId) {
+            document.querySelectorAll('.weather-tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelector(`[onclick="showWeatherTab('${tabId}')"]`).classList.add('active');
+
+            if (tabId === 'weather-map' && !map) {
+                initMap();
+            }
+        }
+
+        function initMap() {
+            if (map) return;
+            
+            map = L.map('map').setView([-33.393, -70.786], 8); // Centrado en Santiago, Chile
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Inicializar capas meteorológicas con la API key
+            const apiKey = window.appConfig.openWeatherMap.apiKey;
+            weatherLayers = {
+                clouds: L.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${apiKey}`, {
+                    opacity: 0.6,
+                    attribution: '© OpenWeatherMap'
+                }),
+                precipitation: L.tileLayer(`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${apiKey}`, {
+                    opacity: 0.6,
+                    attribution: '© OpenWeatherMap'
+                }),
+                wind: L.tileLayer(`https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${apiKey}`, {
+                    opacity: 0.6,
+                    attribution: '© OpenWeatherMap'
+                }),
+                pressure: L.tileLayer(`https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${apiKey}`, {
+                    opacity: 0.6,
+                    attribution: '© OpenWeatherMap'
+                })
+            };
+
+            // Agregar marcador para Santiago
+            L.marker([-33.393, -70.786])
+                .addTo(map)
+                .bindPopup('Aeropuerto Internacional Arturo Merino Benítez (SCEL)')
+                .openPopup();
+        }
+
+        function toggleMapLayer(layerName) {
+            const checkbox = document.getElementById(`${layerName}-layer`);
+            if (checkbox.checked) {
+                weatherLayers[layerName].addTo(map);
+                updateLegend(layerName, true);
+            } else {
+                map.removeLayer(weatherLayers[layerName]);
+                updateLegend(layerName, false);
+            }
+        }
+
+        function updateLegend(layerName, show) {
+            const legend = document.getElementById('map-legend');
+            const existingLegend = legend.querySelector(`[data-layer="${layerName}"]`);
+            
+            if (show && !existingLegend) {
+                const legendItem = document.createElement('div');
+                legendItem.setAttribute('data-layer', layerName);
+                legendItem.innerHTML = getLegendContent(layerName);
+                legend.appendChild(legendItem);
+            } else if (!show && existingLegend) {
+                existingLegend.remove();
+            }
+        }
+
+        function getLegendContent(layerName) {
+            const legends = {
+                clouds: 'Nubosidad: 0-100%',
+                precipitation: 'Precipitación: 0-50mm/h',
+                wind: 'Viento: 0-100 km/h',
+                pressure: 'Presión: 950-1050 hPa'
+            };
+            return legends[layerName];
+        }
+
+        // Variables globales para el decodificador
+        const weatherDecoder = new WeatherDecoder();
+        const weatherAPI = new WeatherAPI();
+        let loadingTimeout;
+
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('metar-btn').disabled = true;
+            document.getElementById('taf-btn').disabled = true;
+            loadingTimeout = setTimeout(() => {
+                hideLoading();
+                alert('La solicitud está tomando más tiempo de lo esperado. Por favor, inténtalo de nuevo.');
+            }, 10000);
+        }
+
+        function hideLoading() {
+            clearTimeout(loadingTimeout);
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('metar-btn').disabled = false;
+            document.getElementById('taf-btn').disabled = false;
+        }
+
+        function handleKeyPress(event) {
+            const input = event.target;
+            const value = input.value.toUpperCase();
+            
+            if (event.key === 'Enter') {
+                getMetar();
+            } else {
+                // Mostrar sugerencias solo si hay 2 o más caracteres
+                if (value.length >= 2) {
+                    showAirportSuggestions(value);
+                } else {
+                    hideAirportSuggestions();
+                }
+            }
+        }
+
+        function showAirportSuggestions(query) {
+            const suggestions = document.getElementById('airport-suggestions');
+            const favorites = weatherAPI.getFavoriteAirports();
+            const recents = weatherAPI.getRecentSearches();
+            
+            // Filtrar aeropuertos que coincidan con la búsqueda
+            const matches = [...favorites, ...recents]
+                .filter(airport => 
+                    airport.icao.includes(query) || 
+                    airport.name.toLowerCase().includes(query.toLowerCase()))
+                .slice(0, 5);
+
+            if (matches.length > 0) {
+                suggestions.innerHTML = matches.map(airport => `
+                    <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                         onclick="selectAirport('${airport.icao}')">
+                        <strong>${airport.icao}</strong> - ${airport.name}
+                    </div>
+                `).join('');
+                suggestions.classList.remove('hidden');
+            } else {
+                hideAirportSuggestions();
+            }
+        }
+
+        function hideAirportSuggestions() {
+            document.getElementById('airport-suggestions').classList.add('hidden');
+        }
+
+        function selectAirport(icao) {
+            document.getElementById('icao-input').value = icao;
+            hideAirportSuggestions();
+            getMetar();
+        }
+
+        function updateFavoriteButton(icao) {
+            const btn = document.getElementById('favorite-btn');
+            const isFavorite = weatherAPI.isFavorite(icao);
+            btn.innerHTML = `<i class="fa${isFavorite ? 's' : 'r'} fa-star"></i>`;
+        }
+
+        function toggleFavorite() {
+            if (!currentAirport) return;
+            
+            const wasAdded = weatherAPI.toggleFavorite(
+                currentAirport.icao, 
+                currentAirport.name
+            );
+            
+            updateFavoriteButton(currentAirport.icao);
+            updateFavoritesList();
+            
+            // Mostrar mensaje de confirmación
+            const message = wasAdded ? 'Agregado a favoritos' : 'Eliminado de favoritos';
+            showToast(message);
+        }
+
+        function updateFavoritesList() {
+            const favorites = weatherAPI.getFavoriteAirports();
+            const container = document.getElementById('favorite-airports-list');
+            
+            if (favorites.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500">No hay aeropuertos favoritos</p>';
+                return;
+            }
+            
+            container.innerHTML = favorites.map(airport => `
+                <button onclick="selectAirport('${airport.icao}')"
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 rounded-full text-sm hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
+                    ${airport.icao}
+                </button>
+            `).join('');
+        }
+
+        function updateRecentSearches() {
+            const recents = weatherAPI.getRecentSearches();
+            const container = document.getElementById('recent-searches-list');
+            
+            if (recents.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500">No hay búsquedas recientes</p>';
+                return;
+            }
+            
+            container.innerHTML = recents.map(airport => `
+                <button onclick="selectAirport('${airport.icao}')"
+                    class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    ${airport.icao}
+                </button>
+            `).join('');
+        }
+
+        async function displayStationInfo(icao) {
+            try {
+                const stationInfo = await weatherAPI.fetchStationInfo(icao);
+                currentAirport = {
+                    icao: stationInfo.icao,
+                    name: stationInfo.name
+                };
+                
+                const stationDiv = document.getElementById('station-info');
+                const stationContent = document.getElementById('station-content');
+                
+                stationContent.innerHTML = `
+                    <p><strong>Nombre:</strong> ${stationInfo.name}</p>
+                    <p><strong>Ciudad:</strong> ${stationInfo.city || 'N/A'}</p>
+                    <p><strong>País:</strong> ${stationInfo.country || 'N/A'}</p>
+                    <p><strong>Elevación:</strong> ${stationInfo.elevation_m || 'N/A'} metros</p>
+                    <p><strong>Latitud:</strong> ${stationInfo.latitude}°</p>
+                    <p><strong>Longitud:</strong> ${stationInfo.longitude}°</p>
+                `;
+                
+                stationDiv.classList.remove('hidden');
+                updateFavoriteButton(icao);
+                
+                // Buscar aeropuertos cercanos
+                const nearby = await weatherAPI.getNearbyAirports(
+                    stationInfo.latitude,
+                    stationInfo.longitude
+                );
+                
+                // Agregar aeropuertos cercanos si existen
+                if (nearby && nearby.length > 0) {
+                    const nearbyHtml = `
+                        <div class="mt-4">
+                            <h6 class="font-semibold mb-2">Aeropuertos Cercanos:</h6>
+                            <div class="flex flex-wrap gap-2">
+                                ${nearby.slice(0, 5).map(airport => `
+                                    <button onclick="selectAirport('${airport.icao}')"
+                                        class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                        ${airport.icao} (${Math.round(airport.distance)}km)
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    stationContent.innerHTML += nearbyHtml;
+                }
+                
+                // Agregar a búsquedas recientes
+                weatherAPI.addToRecent(stationInfo.icao, stationInfo.name);
+                updateRecentSearches();
+                
+            } catch (error) {
+                console.error('Error al obtener información del aeropuerto:', error);
+            }
+        }
+
+        function createChart(canvasId, data, label, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+            
+            charts[canvasId] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => new Date(d.time).toLocaleTimeString()),
+                    datasets: [{
+                        label: label,
+                        data: data.map(d => d.value),
+                        borderColor: color,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+
+        async function displayMetarTrends(icao) {
+            try {
+                const history = await weatherAPI.getMetarHistory(icao);
+                const trends = history.trends;
+                
+                document.getElementById('weather-trends').classList.remove('hidden');
+                
+                // Crear gráficos
+                createChart('temperature-chart', trends.temperature, 'Temperatura (°C)', '#ef4444');
+                createChart('wind-chart', trends.windSpeed, 'Viento (kt)', '#3b82f6');
+                createChart('visibility-chart', trends.visibility, 'Visibilidad (m)', '#10b981');
+                createChart('pressure-chart', trends.pressure, 'QNH (hPa)', '#8b5cf6');
+                
+            } catch (error) {
+                console.error('Error al obtener tendencias:', error);
+            }
+        }
+
+        async function getMetar() {
+            const icao = document.getElementById('icao-input').value.toUpperCase();
+            if (!weatherAPI.validateIcao(icao)) {
+                alert('Por favor, ingrese un código ICAO válido (4 letras)');
+                return;
+            }
+
+            try {
+                showLoading();
+                const data = await weatherAPI.fetchMetar(icao);
+                displayWeatherInfo('METAR', data.raw);
+                await displayStationInfo(icao);
+                await displayMetarTrends(icao);
+            } catch (error) {
+                alert('Error al obtener datos METAR: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Inicializar listas de favoritos y recientes
+        updateFavoritesList();
+        updateRecentSearches();
+    </script>
+</body>
+</html>

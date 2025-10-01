@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Conversor de Unidades Aeronáuticas - Hernancius Aviator</title>
+  <link href="dist/output.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Variables de color */
+    :root {
+      --light-background: #f9fafb;
+      --light-text: #1f2937;
+      --dark-background: #111827;
+      --dark-text: #f9fafb;
+    }
+    
+    /* Estilos para modo claro/oscuro */
+    .dark {
+      color-scheme: dark;
+    }
+    
+    .bg-light-background {
+      background-color: var(--light-background);
+    }
+    
+    .text-light-text {
+      color: var(--light-text);
+    }
+    
+    .dark .bg-dark-background {
+      background-color: var(--dark-background);
+    }
+    
+    .dark .text-dark-text {
+      color: var(--dark-text);
+    }
+    
+    /* Estilos para las pestañas */
+    .tabs-container {
+      position: relative;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      padding-bottom: 5px;
+    }
+    
+    .tabs-container::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+    
+    .tabs-nav {
+      display: flex;
+      flex-wrap: nowrap;
+      min-width: max-content;
+      gap: 0.5rem;
+    }
+    
+    .tab-btn {
+      position: relative;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    @media (max-width: 640px) {
+      .tab-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+      }
+      
+      .tab-btn i {
+        margin-right: 0.25rem;
+      }
+    }
+    
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: rgb(59 130 246);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .tab-btn.active {
+      color: rgb(255, 255, 255);
+      background-color: rgb(59 130 246);
+      font-weight: 600;
+      box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+    }
+    
+    .tab-btn.active::after {
+      transform: scaleX(1);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: rgb(59 130 246);
+    }
+    
+    .hero-section {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/aviation-bg3.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+    
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.6), rgba(37, 99, 235, 0.6));
+      z-index: 1;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+    
+    .conversion-card {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .dark .conversion-card {
+      background-color: #1f2937;
+    }
+    
+    .conversion-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .input-group {
+      transition: all 0.3s ease;
+    }
+    
+    .input-group:focus-within {
+      transform: scale(1.02);
+    }
+    
+    .conversion-input {
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+    
+    .conversion-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+    
+    .conversion-btn {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .conversion-btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.5s ease-out;
+    }
+    
+    .conversion-btn:hover::after {
+      transform: translate(-50%, -50%) scale(2);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+    
+    .result-display {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
+      border-left: 4px solid #3b82f6;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .result-display:hover {
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-light-background text-light-text dark:bg-dark-background dark:text-dark-text">
+  <!-- Header -->
+  <header class="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 fixed w-full z-40 p-4 flex justify-between items-center transition-all duration-300">
+    <!-- Logo -->
+    <div class="text-2xl font-bold">
+      <a href="index.html">
+        <img src="images/logo.png" alt="Mi Logo" class="h-12">
+      </a>
+    </div>
+    <!-- Menú para dispositivos grandes -->
+    <nav class="hidden md:flex items-center space-x-8 text-lg">
+      <a href="index.html" class="hover:text-blue-500">Inicio</a>
+      <a href="index.html#sobre-mi" class="hover:text-blue-500">Sobre Mí</a>
+      <a href="index.html#servicios" class="hover:text-blue-500">Servicios</a>
+      <a href="flightcal.html" class="hover:text-blue-500">FlightCal</a>
+      <a href="conversion.html" class="hover:text-blue-500">Conversión</a>
+      <a href="index.html#blog" class="hover:text-blue-500">Blog</a>
+      <a href="index.html#contacto" class="hover:text-blue-500">Contacto</a>
+      <!-- Botón de alternancia de tema -->
+      <div class="flex items-center ml-4">
+        <label for="theme-toggle" class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="theme-toggle" class="sr-only" onclick="toggleTheme()" />
+          <div class="w-12 h-6 bg-gray-200 rounded-full p-1 flex items-center dark:bg-gray-600">
+            <span class="w-4 h-4 bg-white rounded-full shadow-md transform transition-transform dark:translate-x-6"></span>
+          </div>
+        </label>
+        <span id="theme-label" class="ml-3 text-gray-700 dark:text-gray-300">Light</span>
+      </div>
+    </nav>
+    <!-- Botón de menú móvil -->
+    <button onclick="toggleMenu()" class="text-gray-600 dark:text-gray-300 md:hidden focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </header>
+
+  <!-- Menú lateral móvil -->
+  <aside id="mobile-menu" class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 transform -translate-x-full transition-transform duration-300 shadow-lg z-50 md:hidden">
+    <div class="p-6 flex justify-end">
+      <button onclick="toggleMenu()" class="text-gray-600 dark:text-gray-300 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <nav class="mt-8">
+      <ul class="space-y-6 text-center text-lg font-semibold">
+        <li><a href="index.html" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Inicio</a></li>
+        <li><a href="index.html#sobre-mi" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Sobre Mí</a></li>
+        <li><a href="index.html#servicios" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Servicios</a></li>
+        <li><a href="flightcal.html" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">FlightCal</a></li>
+        <li><a href="conversion.html" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500 text-blue-500">Conversión</a></li>
+        <li><a href="index.html#blog" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Blog</a></li>
+        <li><a href="index.html#contacto" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Contacto</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="text-4xl font-bold mb-4">Conversor de Unidades Aeronáuticas</h1>
+        <p class="text-xl opacity-90">Herramienta precisa para todas tus conversiones de aviación</p>
+      </div>
+    </section>
+    
+    <div class="container mx-auto px-4 py-12 -mt-16 relative z-10">
+      <!-- Tabs Card -->
+      <div class="conversion-card p-4 mb-8">
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <div class="overflow-x-auto py-2 px-2 tabs-container">
+            <nav class="flex gap-2 min-w-max tabs-nav" aria-label="Tabs">
+              <button class="tab-btn active" data-tab="longitud">
+                <span class="flex items-center gap-2">
+                  <i class="fas fa-ruler fa-fw"></i>
+                  Longitud
+                </span>
+              </button>
+              <button class="tab-btn" data-tab="velocidad">
+                <span class="flex items-center gap-2">
+                  <i class="fas fa-tachometer-alt fa-fw"></i>
+                  Velocidad
+                </span>
+              </button>
+              <button class="tab-btn" data-tab="peso">
+                <span class="flex items-center gap-2">
+                  <i class="fas fa-weight-hanging fa-fw"></i>
+                  Peso
+                </span>
+              </button>
+              <button class="tab-btn" data-tab="volumen">
+                <span class="flex items-center gap-2">
+                  <i class="fas fa-gas-pump fa-fw"></i>
+                  Volumen
+                </span>
+              </button>
+              <button class="tab-btn" data-tab="temperatura">
+                <span class="flex items-center gap-2">
+                  <i class="fas fa-temperature-high fa-fw"></i>
+                  Temperatura
+                </span>
+              </button>
+              <button class="tab-btn" data-tab="presion">
+                <span class="flex items-center gap-2">
+                  <i class="fas fa-compress-alt fa-fw"></i>
+                  Presión
+                </span>
+              </button>
+              <button class="tab-btn" data-tab="tiempo">
+                <span class="flex items-center gap-2">
+                  <i class="fas fa-clock fa-fw"></i>
+                  Tiempo
+                </span>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <br>
+      <!-- Contenido dinámico de pestañas -->
+      <div id="tab-content" class="conversion-card p-6 fade-in"></div>
+      <br>
+      <!-- Información adicional -->
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="conversion-card p-6">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fas fa-plane text-blue-500 mr-2"></i>
+            Para Pilotos
+          </h3>
+          <p class="text-gray-600 dark:text-gray-300">Conversiones esenciales para la planificación de vuelo y navegación aérea.</p>
+        </div>
+        <div class="conversion-card p-6">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fas fa-tools text-blue-500 mr-2"></i>
+            Para Mecánicos
+          </h3>
+          <p class="text-gray-600 dark:text-gray-300">Unidades precisas para el mantenimiento y reparación de aeronaves.</p>
+        </div>
+        <div class="conversion-card p-6">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fas fa-graduation-cap text-blue-500 mr-2"></i>
+            Para Estudiantes
+          </h3>
+          <p class="text-gray-600 dark:text-gray-300">Herramienta educativa para comprender las unidades utilizadas en aviación.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <br>
+  <br>
+  <!-- Footer -->
+  <footer class="bg-white dark:bg-gray-900 py-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <!-- Columna 1: Logo y Redes Sociales -->
+            <div class="flex flex-col items-center md:items-start">
+                <img src="images/logo.png" alt="Hernancius Aviator" class="h-14 mb-6">
+                <div class="flex space-x-8 mt-5">
+                    <a href="https://www.facebook.com/hr.aviator/" target="_blank"
+                        class="text-blue-400 hover:text-blue-300 transition-colors duration-300">
+                        <i class="fab fa-facebook-f fa-2x"></i>
+                    </a>
+                    <a href="https://www.instagram.com/hernanciusaviator/" target="_blank"
+                        class="text-pink-400 hover:text-pink-300 transition-colors duration-300">
+                        <i class="fab fa-instagram fa-2x"></i>
+                    </a>
+                    <a href="https://x.com/hernanciusaviat?t" target="_blank"
+                        class="text-blue-400 hover:text-blue-300 transition-colors duration-300">
+                        <i class="fab fa-twitter fa-2x"></i>
+                    </a>
+                    <a href="https://www.twitch.tv/hernancius_aviator" target="_blank"
+                        class="text-purple-400 hover:text-purple-300 transition-colors duration-300">
+                        <i class="fab fa-twitch fa-2x"></i>
+                    </a>
+                    <a href="http://www.youtube.com/@hernancius_aviator" target="_blank"
+                        class="text-red-500 hover:text-red-400 transition-colors duration-300">
+                        <i class="fab fa-youtube fa-2x"></i>
+                    </a>
+                </div>
+                <br>
+            </div>
+            <!-- Columna 2: Navegación -->
+            <div class="flex flex-col justify-center">
+                <h3 class="text-xl font-bold mb-4 text-gray-300">Navegación</h3>
+                <br>
+                <ul class="space-y-2">
+                    <li><a href="#inicio" class="hover:text-gray-300 transition-colors duration-300">Inicio</a></li>
+                    <li><a href="#sobre-mi" class="hover:text-gray-300 transition-colors duration-300">Sobre
+                            Mí</a></li>
+                    <li><a href="#servicios" class="hover:text-gray-300 transition-colors duration-300">Servicios</a></li>
+                    <li><a href="flightcal.html" class="hover:text-gray-300 transition-colors duration-300">FlightCal</a></li>
+                    <li><a href="#" class="hover:text-gray-300 transition-colors duration-300">Conversión</a></li>
+                    <li><a href="#blog" class="hover:text-gray-300 transition-colors duration-300">Blog</a></li>
+                    <li><a href="#contacto" class="hover:text-gray-300 transition-colors duration-300">Contacto</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 3: Contacto y Política -->
+            <div class="flex flex-col justify-center">
+                <h3 class="text-xl font-bold mb-4 text-gray-300">Contacto</h3>
+                <p class="mb-2">Email: <a href="mailto:contacto@hernancius-aviator.com"
+                        class="text-blue-400 hover:text-blue-300 transition-colors duration-300">contacto@hernancius-aviator.com</a>
+                </p>
+
+                <h3 class="text-xl font-bold mt-8 mb-4 text-gray-300">Política</h3>
+                <ul class="space-y-2">
+                    <li><a href="/politica-privacidad"
+                            class="hover:text-gray-300 transition-colors duration-300">Política de
+                            Privacidad</a></li>
+                    <li><a href="/terminos-servicio"
+                            class="hover:text-gray-300 transition-colors duration-300">Términos de Servicio</a></li>
+                </ul>
+            </div>
+        </div>
+        <br>
+        <hr>
+        <br>
+        <!-- Segmento de Derechos Reservados -->
+        <div class="border-t border-gray-700 mt-12 pt-8 text-left text-gray-400">
+            <p> 2023 Hernancius Aviator. Todos los derechos reservados.</p>
+        </div>
+        <br>
+    </div>
+</footer>
+
+  <script>
+    const tabs = {
+      longitud: {
+        unidades: [
+          { id: 'metros', nombre: 'Metros (m)' },
+          { id: 'pies', nombre: 'Pies (ft)' },
+          { id: 'millas_nauticas', nombre: 'Millas Náuticas (NM)' },
+          { id: 'kilometros', nombre: 'Kilómetros (km)' },
+          { id: 'millas', nombre: 'Millas (mi)' },
+          { id: 'pulgadas', nombre: 'Pulgadas (in)' }
+        ],
+        factores: {
+          metros: { metros: 1, pies: 3.28084, millas_nauticas: 0.000539957, kilometros: 0.001, millas: 0.000621371, pulgadas: 39.3701 },
+          pies: { metros: 0.3048, pies: 1, millas_nauticas: 0.000164579, kilometros: 0.0003048, millas: 0.000189394, pulgadas: 12 },
+          millas_nauticas: { metros: 1852, pies: 6076.12, millas_nauticas: 1, kilometros: 1.852, millas: 1.15078, pulgadas: 72913.4 },
+          kilometros: { metros: 1000, pies: 3280.84, millas_nauticas: 0.539957, kilometros: 1, millas: 0.621371, pulgadas: 39370.1 },
+          millas: { metros: 1609.34, pies: 5280, millas_nauticas: 0.868976, kilometros: 1.60934, millas: 1, pulgadas: 63360 },
+          pulgadas: { metros: 0.0254, pies: 0.0833333, millas_nauticas: 0.0000137149, kilometros: 0.0000254, millas: 0.0000157828, pulgadas: 1 }
+        },
+        icono: 'fa-ruler'
+      },
+      velocidad: {
+        unidades: [
+          { id: 'nudos', nombre: 'Nudos (kt)' },
+          { id: 'kmh', nombre: 'Kilómetros por hora (km/h)' },
+          { id: 'mph', nombre: 'Millas por hora (mph)' },
+          { id: 'mps', nombre: 'Metros por segundo (m/s)' },
+          { id: 'fpm', nombre: 'Pies por minuto (ft/min)' }
+        ],
+        factores: {
+          nudos: { nudos: 1, kmh: 1.852, mph: 1.15078, mps: 0.514444, fpm: 101.269 },
+          kmh: { nudos: 0.539957, kmh: 1, mph: 0.621371, mps: 0.277778, fpm: 54.6807 },
+          mph: { nudos: 0.868976, kmh: 1.60934, mph: 1, mps: 0.44704, fpm: 88 },
+          mps: { nudos: 1.94384, kmh: 3.6, mph: 2.23694, mps: 1, fpm: 196.85 },
+          fpm: { nudos: 0.00987473, kmh: 0.01829, mph: 0.01136, mps: 0.00508, fpm: 1 }
+        },
+        icono: 'fa-tachometer-alt'
+      },
+      peso: {
+        unidades: [
+          { id: 'kilogramos', nombre: 'Kilogramos (kg)' },
+          { id: 'libras', nombre: 'Libras (lb)' },
+          { id: 'toneladas', nombre: 'Toneladas (t)' },
+          { id: 'onzas', nombre: 'Onzas (oz)' }
+        ],
+        factores: {
+          kilogramos: { kilogramos: 1, libras: 2.20462, toneladas: 0.001, onzas: 35.274 },
+          libras: { kilogramos: 0.453592, libras: 1, toneladas: 0.000453592, onzas: 16 },
+          toneladas: { kilogramos: 1000, libras: 2204.62, toneladas: 1, onzas: 35274 },
+          onzas: { kilogramos: 0.0283495, libras: 0.0625, toneladas: 0.0000283495, onzas: 1 }
+        },
+        icono: 'fa-weight-hanging'
+      },
+      volumen: {
+        unidades: [
+          { id: 'litros', nombre: 'Litros (L)' },
+          { id: 'galones_us', nombre: 'Galones US (gal)' },
+          { id: 'galones_imp', nombre: 'Galones Imperiales (imp gal)' },
+          { id: 'metros_cubicos', nombre: 'Metros cúbicos (m³)' },
+          { id: 'pies_cubicos', nombre: 'Pies cúbicos (ft³)' }
+        ],
+        factores: {
+          litros: { litros: 1, galones_us: 0.264172, galones_imp: 0.219969, metros_cubicos: 0.001, pies_cubicos: 0.0353147 },
+          galones_us: { litros: 3.78541, galones_us: 1, galones_imp: 0.832674, metros_cubicos: 0.00378541, pies_cubicos: 0.133681 },
+          galones_imp: { litros: 4.54609, galones_us: 1.20095, galones_imp: 1, metros_cubicos: 0.00454609, pies_cubicos: 0.160544 },
+          metros_cubicos: { litros: 1000, galones_us: 264.172, galones_imp: 219.969, metros_cubicos: 1, pies_cubicos: 35.3147 },
+          pies_cubicos: { litros: 28.3168, galones_us: 7.48052, galones_imp: 6.22884, metros_cubicos: 0.0283168, pies_cubicos: 1 }
+        },
+        icono: 'fa-gas-pump'
+      },
+      temperatura: {
+        unidades: [
+          { id: 'celsius', nombre: 'Celsius (°C)' },
+          { id: 'fahrenheit', nombre: 'Fahrenheit (°F)' },
+          { id: 'kelvin', nombre: 'Kelvin (K)' }
+        ],
+        icono: 'fa-temperature-high'
+      },
+      presion: {
+        unidades: [
+          { id: 'hpa', nombre: 'Hectopascales (hPa)' },
+          { id: 'inhg', nombre: 'Pulgadas de mercurio (inHg)' },
+          { id: 'mmhg', nombre: 'Milímetros de mercurio (mmHg)' },
+          { id: 'psi', nombre: 'Libras por pulgada cuadrada (psi)' }
+        ],
+        factores: {
+          hpa: { hpa: 1, inhg: 0.02953, mmhg: 0.750062, psi: 0.0145038 },
+          inhg: { hpa: 33.8639, inhg: 1, mmhg: 25.4, psi: 0.491154 },
+          mmhg: { hpa: 1.33322, inhg: 0.0393701, mmhg: 1, psi: 0.0193368 },
+          psi: { hpa: 68.9476, inhg: 2.03602, mmhg: 51.7149, psi: 1 }
+        },
+        icono: 'fa-compress-alt'
+      },
+      tiempo: {
+        unidades: [
+          { id: 'horas', nombre: 'Horas (h)' },
+          { id: 'minutos', nombre: 'Minutos (min)' },
+          { id: 'segundos', nombre: 'Segundos (s)' }
+        ],
+        factores: {
+          horas: { horas: 1, minutos: 60, segundos: 3600 },
+          minutos: { horas: 0.0166667, minutos: 1, segundos: 60 },
+          segundos: { horas: 0.000277778, minutos: 0.0166667, segundos: 1 }
+        },
+        icono: 'fa-clock'
+      }
+    };
+
+    // Agregar event listeners a los botones de tabs
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      
+      tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const tabId = this.getAttribute('data-tab');
+          mostrarFormulario(tabId);
+        });
+      });
+      
+      // Mostrar pestaña por defecto
+      mostrarFormulario('longitud');
+    });
+
+    function mostrarFormulario(tab) {
+      // Cambiar clase activa en botones
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (btn.getAttribute('data-tab') === tab) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      const tabInfo = tabs[tab];
+      let html = '';
+      
+      // Agregar título e icono
+      html += `
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold flex items-center">
+            <i class="fas ${tabInfo.icono} text-blue-500 mr-3"></i>
+            Conversión de ${tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </h2>
+          <p class="text-gray-600 dark:text-gray-300 mt-2">Convierte entre diferentes unidades de ${tab} utilizadas en aviación.</p>
+        </div>
+      `;
+
+      if (tab === 'temperatura') {
+        // Formulario especial para temperatura
+        html += `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="input-group">
+              <label class="block text-sm font-medium mb-2" for="celsius">Celsius (°C)</label>
+              <input type="number" id="celsius" class="conversion-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none" placeholder="0">
+            </div>
+            <div class="input-group">
+              <label class="block text-sm font-medium mb-2" for="fahrenheit">Fahrenheit (°F)</label>
+              <input type="number" id="fahrenheit" class="conversion-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none" placeholder="32">
+            </div>
+            <div class="input-group">
+              <label class="block text-sm font-medium mb-2" for="kelvin">Kelvin (K)</label>
+              <input type="number" id="kelvin" class="conversion-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none" placeholder="273.15">
+            </div>
+          </div>
+          <div class="mt-6">
+            <button onclick="convertirTemp()" class="conversion-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+              <i class="fas fa-exchange-alt mr-2"></i>
+              Convertir
+            </button>
+          </div>
+          <div id="resultado" class="result-display hidden mt-6"></div>
+        `;
+      } else if (tab === 'tiempo') {
+        // Formulario especial para tiempo
+        html += `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="input-group">
+              <label class="block text-sm font-medium mb-2" for="horas">Horas (h)</label>
+              <input type="number" id="horas" class="conversion-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none" placeholder="0">
+            </div>
+            <div class="input-group">
+              <label class="block text-sm font-medium mb-2" for="minutos">Minutos (min)</label>
+              <input type="number" id="minutos" class="conversion-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none" placeholder="0">
+            </div>
+            <div class="input-group">
+              <label class="block text-sm font-medium mb-2" for="segundos">Segundos (s)</label>
+              <input type="number" id="segundos" class="conversion-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none" placeholder="0">
+            </div>
+          </div>
+          <div class="mt-6">
+            <button onclick="convertirTiempo()" class="conversion-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+              <i class="fas fa-exchange-alt mr-2"></i>
+              Convertir
+            </button>
+          </div>
+          <div id="resultado" class="result-display hidden mt-6"></div>
+        `;
+      } else {
+        // Formulario genérico para otras conversiones
+        html += `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="input-group">
+              <label class="block text-sm font-medium mb-2" for="valor">Valor a convertir</label>
+              <input type="number" id="valor" class="conversion-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none" placeholder="Ingrese un valor">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-2" for="desde">Desde</label>
+                <select id="desde" class="conversion-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                  ${tabInfo.unidades.map(u => `<option value="${u.id}">${u.nombre}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2" for="hacia">Hacia</label>
+                <select id="hacia" class="conversion-input w-full p-3 border rounded dark:bg-gray-700 focus:outline-none">
+                  ${tabInfo.unidades.map((u, i) => `<option value="${u.id}" ${i === 1 ? 'selected' : ''}>${u.nombre}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6">
+            <button onclick="convertirGenerico('${tab}')" class="conversion-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center">
+              <i class="fas fa-exchange-alt mr-2"></i>
+              Convertir
+            </button>
+          </div>
+          <div id="resultado" class="result-display hidden mt-6"></div>
+          
+          <!-- Tabla de conversiones comunes -->
+          <div class="mt-10">
+            <h3 class="text-lg font-semibold mb-4">Conversiones comunes</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full bg-white dark:bg-gray-700 rounded-lg overflow-hidden">
+                <thead class="bg-gray-100 dark:bg-gray-600">
+                  <tr>
+                    <th class="py-3 px-4 text-left">Desde</th>
+                    <th class="py-3 px-4 text-left">Hacia</th>
+                    <th class="py-3 px-4 text-left">Factor</th>
+                    <th class="py-3 px-4 text-left">Ejemplo</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-500">
+                  ${generarFilasTablaConversion(tab)}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('tab-content').innerHTML = html;
+      document.getElementById('tab-content').classList.remove('fade-in');
+      void document.getElementById('tab-content').offsetWidth; // Forzar reflow
+      document.getElementById('tab-content').classList.add('fade-in');
+    }
+
+    function generarFilasTablaConversion(tab) {
+      const tabInfo = tabs[tab];
+      let filas = '';
+      
+      // Mostrar solo algunas conversiones comunes para no sobrecargar la tabla
+      const unidades = tabInfo.unidades;
+      const ejemploValor = 10; // Valor de ejemplo para mostrar
+      
+      if (unidades.length > 1) {
+        // Primera unidad a segunda unidad
+        const desde = unidades[0];
+        const hacia = unidades[1];
+        const factor = tabInfo.factores[desde.id][hacia.id];
+        const resultado = (ejemploValor * factor).toFixed(2);
+        filas += `
+          <tr>
+            <td class="py-3 px-4">${desde.nombre}</td>
+            <td class="py-3 px-4">${hacia.nombre}</td>
+            <td class="py-3 px-4">× ${factor}</td>
+            <td class="py-3 px-4">${ejemploValor} ${desde.id} = ${resultado} ${hacia.id}</td>
+          </tr>
+        `;
+        
+        // Segunda unidad a primera unidad
+        const factorInverso = tabInfo.factores[hacia.id][desde.id];
+        const resultadoInverso = (ejemploValor * factorInverso).toFixed(2);
+        filas += `
+          <tr>
+            <td class="py-3 px-4">${hacia.nombre}</td>
+            <td class="py-3 px-4">${desde.nombre}</td>
+            <td class="py-3 px-4">× ${factorInverso}</td>
+            <td class="py-3 px-4">${ejemploValor} ${hacia.id} = ${resultadoInverso} ${desde.id}</td>
+          </tr>
+        `;
+        
+        // Si hay más de 2 unidades, agregar otra conversión común
+        if (unidades.length > 2) {
+          const tercera = unidades[2];
+          const factorTercera = tabInfo.factores[desde.id][tercera.id];
+          const resultadoTercera = (ejemploValor * factorTercera).toFixed(2);
+          filas += `
+            <tr>
+              <td class="py-3 px-4">${desde.nombre}</td>
+              <td class="py-3 px-4">${tercera.nombre}</td>
+              <td class="py-3 px-4">× ${factorTercera}</td>
+              <td class="py-3 px-4">${ejemploValor} ${desde.id} = ${resultadoTercera} ${tercera.id}</td>
+            </tr>
+          `;
+        }
+      }
+      
+      return filas;
+    }
+
+    function convertirGenerico(tab) {
+      const valor = parseFloat(document.getElementById('valor').value);
+      if (isNaN(valor)) {
+        mostrarResultado('Por favor, ingrese un valor numérico válido.', true);
+        return;
+      }
+
+      const desde = document.getElementById('desde').value;
+      const hacia = document.getElementById('hacia').value;
+      const factor = tabs[tab].factores[desde][hacia];
+      const resultado = valor * factor;
+
+      const desdeNombre = tabs[tab].unidades.find(u => u.id === desde).nombre;
+      const haciaNombre = tabs[tab].unidades.find(u => u.id === hacia).nombre;
+
+      mostrarResultado(`
+        <div class="flex flex-col md:flex-row md:items-center justify-between">
+          <div>
+            <span class="text-lg font-semibold">${valor.toLocaleString()} ${desdeNombre}</span>
+            <span class="mx-3 text-gray-400">→</span>
+            <span class="text-xl font-bold text-blue-600">${resultado.toLocaleString()} ${haciaNombre}</span>
+          </div>
+          <div class="mt-3 md:mt-0 text-sm text-gray-500">
+            Factor de conversión: × ${factor}
+          </div>
+        </div>
+      `);
+    }
+
+    function convertirTemp() {
+      const celsius = document.getElementById('celsius').value;
+      const fahrenheit = document.getElementById('fahrenheit').value;
+      const kelvin = document.getElementById('kelvin').value;
+
+      let resultado = '';
+
+      if (celsius !== '') {
+        const c = parseFloat(celsius);
+        const f = (c * 9/5) + 32;
+        const k = c + 273.15;
+        document.getElementById('fahrenheit').value = f.toFixed(2);
+        document.getElementById('kelvin').value = k.toFixed(2);
+        resultado = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="font-semibold">${c}°C equivale a:</p>
+              <p class="text-lg mt-2"><span class="font-bold text-blue-600">${f.toFixed(2)}°F</span> (Fahrenheit)</p>
+              <p class="text-lg mt-1"><span class="font-bold text-blue-600">${k.toFixed(2)}K</span> (Kelvin)</p>
+            </div>
+            <div class="text-sm text-gray-500">
+              <p>Fórmula Celsius a Fahrenheit: °F = (°C × 9/5) + 32</p>
+              <p>Fórmula Celsius a Kelvin: K = °C + 273.15</p>
+            </div>
+          </div>
+        `;
+      } else if (fahrenheit !== '') {
+        const f = parseFloat(fahrenheit);
+        const c = (f - 32) * 5/9;
+        const k = c + 273.15;
+        document.getElementById('celsius').value = c.toFixed(2);
+        document.getElementById('kelvin').value = k.toFixed(2);
+        resultado = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="font-semibold">${f}°F equivale a:</p>
+              <p class="text-lg mt-2"><span class="font-bold text-blue-600">${c.toFixed(2)}°C</span> (Celsius)</p>
+              <p class="text-lg mt-1"><span class="font-bold text-blue-600">${k.toFixed(2)}K</span> (Kelvin)</p>
+            </div>
+            <div class="text-sm text-gray-500">
+              <p>Fórmula Fahrenheit a Celsius: °C = (°F - 32) × 5/9</p>
+              <p>Fórmula Fahrenheit a Kelvin: K = (°F - 32) × 5/9 + 273.15</p>
+            </div>
+          </div>
+        `;
+      } else if (kelvin !== '') {
+        const k = parseFloat(kelvin);
+        const c = k - 273.15;
+        const f = (c * 9/5) + 32;
+        document.getElementById('celsius').value = c.toFixed(2);
+        document.getElementById('fahrenheit').value = f.toFixed(2);
+        resultado = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="font-semibold">${k}K equivale a:</p>
+              <p class="text-lg mt-2"><span class="font-bold text-blue-600">${c.toFixed(2)}°C</span> (Celsius)</p>
+              <p class="text-lg mt-1"><span class="font-bold text-blue-600">${f.toFixed(2)}°F</span> (Fahrenheit)</p>
+            </div>
+            <div class="text-sm text-gray-500">
+              <p>Fórmula Kelvin a Celsius: °C = K - 273.15</p>
+              <p>Fórmula Kelvin a Fahrenheit: °F = (K - 273.15) × 9/5 + 32</p>
+            </div>
+          </div>
+        `;
+      } else {
+        mostrarResultado('Por favor, ingrese al menos un valor para convertir.', true);
+        return;
+      }
+
+      mostrarResultado(resultado);
+    }
+
+    function convertirTiempo() {
+      const horas = parseFloat(document.getElementById('horas').value) || 0;
+      const minutos = parseFloat(document.getElementById('minutos').value) || 0;
+      const segundos = parseFloat(document.getElementById('segundos').value) || 0;
+
+      if (horas === 0 && minutos === 0 && segundos === 0) {
+        mostrarResultado('Por favor, ingrese al menos un valor para convertir.', true);
+        return;
+      }
+
+      // Convertir todo a segundos
+      const totalSegundos = horas * 3600 + minutos * 60 + segundos;
+      
+      // Calcular las diferentes representaciones
+      const totalHoras = totalSegundos / 3600;
+      const totalMinutos = totalSegundos / 60;
+      
+      // Formato horas:minutos:segundos
+      const h = Math.floor(totalSegundos / 3600);
+      const m = Math.floor((totalSegundos % 3600) / 60);
+      const s = Math.floor(totalSegundos % 60);
+      const formatoHMS = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+      mostrarResultado(`
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p class="font-semibold">Tiempo ingresado: ${horas}h ${minutos}min ${segundos}s</p>
+            <p class="text-lg mt-2">Formato HMS: <span class="font-bold text-blue-600">${formatoHMS}</span></p>
+            <p class="text-lg mt-1">Total en horas: <span class="font-bold text-blue-600">${totalHoras.toFixed(2)}h</span></p>
+            <p class="text-lg mt-1">Total en minutos: <span class="font-bold text-blue-600">${totalMinutos.toFixed(2)}min</span></p>
+            <p class="text-lg mt-1">Total en segundos: <span class="font-bold text-blue-600">${totalSegundos}s</span></p>
+          </div>
+          <div class="mt-3 md:mt-0 text-sm text-gray-500">
+            <p>Fórmula para convertir a segundos:</p>
+            <p>Segundos totales = horas × 3600 + minutos × 60 + segundos</p>
+          </div>
+        </div>
+      `);
+    }
+
+    function mostrarResultado(mensaje, esError = false) {
+      const resultadoDiv = document.getElementById('resultado');
+      resultadoDiv.innerHTML = mensaje;
+      resultadoDiv.classList.remove('hidden');
+      
+      if (esError) {
+        resultadoDiv.classList.add('bg-red-50', 'border-red-500');
+        resultadoDiv.classList.remove('result-display');
+      } else {
+        resultadoDiv.classList.remove('bg-red-50', 'border-red-500');
+        resultadoDiv.classList.add('result-display');
+      }
+      
+      // Efecto de aparición
+      resultadoDiv.classList.remove('fade-in');
+      void resultadoDiv.offsetWidth; // Forzar reflow
+      resultadoDiv.classList.add('fade-in');
+    }
+
+    // Función para alternar entre temas
+    function toggleTheme() {
+      const isDarkMode = document.documentElement.classList.toggle('dark');
+      if (isDarkMode) {
+        localStorage.setItem('theme', 'dark');
+        document.getElementById('theme-label').textContent = 'Dark';
+      } else {
+        localStorage.setItem('theme', 'light');
+        document.getElementById('theme-label').textContent = 'Light';
+      }
+    }
+
+    // Función que se ejecuta al cargar la página
+    window.onload = function () {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-label').textContent = 'Dark';
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('theme-label').textContent = 'Light';
+      }
+    }
+
+    // Función para alternar el menú desplegable en móviles
+    function toggleMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('translate-x-0');
+      menu.classList.toggle('-translate-x-full');
+    }
+  </script>
+</body>
+</html>

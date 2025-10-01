@@ -1,254 +1,390 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" class="dark">
+
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-  <title class="fonts">Hernancius-Aviator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name= "google-site-verification=xP0LjftHdh1DCx_1dfeRixSw0Tw8oZMhtCsOwXiu50E">
+    <title>Inicio - Mi Espacio Aéreo</title>
+    <link href="dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Añadir estilos para aspect ratio -->
+    <style>
+        .aspect-w-16 {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        .aspect-w-16 > * {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+    </style>
 
-  <!-- CSS  -->
-  <link href="css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
-  <!--Fonts-->
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@1,300&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
-  <link rel="icon" href="favicon.ico" sizes="32x32">
-    
+    <script>
+        // Función para alternar entre temas
+        function toggleTheme() {
+            const isDarkMode = document.documentElement.classList.toggle('dark');
+            if (isDarkMode) {
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-label').textContent = 'Dark';
+            } else {
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-label').textContent = 'Light';
+            }
+        }
+
+        // Función que se ejecuta al cargar la página
+        window.onload = function () {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-label').textContent = 'Dark';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-label').textContent = 'Light';
+            }
+            startCarousel(); // Inicia el carrusel al cargar la página
+        }
+
+        // Función para alternar el menú desplegable en móviles
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('translate-x-0');
+            menu.classList.toggle('-translate-x-full');
+        }
+
+        // Función para iniciar el carrusel de imágenes
+        function startCarousel() {
+            const images = document.querySelectorAll('.carousel-image');
+            let currentIndex = 0;
+
+            setInterval(() => {
+                images[currentIndex].classList.remove('opacity-100');
+                images[currentIndex].classList.add('opacity-0');
+
+                currentIndex = (currentIndex + 1) % images.length;
+
+                images[currentIndex].classList.remove('opacity-0');
+                images[currentIndex].classList.add('opacity-100');
+            }, 5000); // Cambia cada 5 segundos
+        }
+    </script>
 </head>
-<body>
-<!-- Seccion del navegador-->
-<div class="navbar-fixed">
-  <nav class="transparent" role="navigation">
-    <div class="nav-wrapper container">
-      <a id="logo-container" href="index.html" class="brand-logo"><img src="logo1.png"></a>
-      <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large right waves-effect waves-light hoverable btn transparent black-text"><i class="material-icons black-text">menu</i></a>
-    </div>
-  </nav>
-</div>
 
-<div id="style-7" class="container scrollbar">
-  <ul id="slide-out" class="sidenav">
-      <li>
-        <div class="user-view">
-          <div class="background">
-            <img class="responsive-img" src="img/cielos/above-1839587_1280.jpg">
-          </div>
-            <a href="#user"><img class="circle" src="img/Screenshot_1.png"></a>
-            <a href="#name"><span class="white-text name">Hernán R. Castellanos C.</span></a>
-            <a href="#email"><span class="white-text email">Piloto Privado</span></a>
+<body class="bg-light-background text-light-text dark:bg-dark-background dark:text-dark-text">
+
+    <!-- Header -->
+    <header class="backdrop-blur-sm bg-white/45 dark:bg-gray-800/45 fixed w-full z-40 p-4 flex justify-between items-center transition-all duration-300">
+        <!-- Logo -->
+        <div class="text-2xl font-bold">
+            <img src="images/logo.png" alt="Mi Logo" class="h-12">
         </div>
-    </li>
-    <li><a href="pag/contenido.html" class="wave-effect"><i class="material-icons">flight_takeoff</i>Contenido</a></li>
-    <li><a href="pag/materias.html" class="wave-effect"><i class="material-icons">business_center</i>Materias</a></li>
-    <li><a href="pag/nosotros.html" class="wave-effect"><i class="material-icons">local_library</i>Sobre mi</a></li>
-    <li><a href="pag/contacto.html" class="wave-effect"><i class="material-icons">contacts</i>Contáctanos</a></li>
-    <li><div class="divider"></div></li>
-    <li><a class="subheader">Contacto</a></li>
-    <li><a href="https://wa.me/56973126500" target ="_blank" class="wave-effect"><i class="fab fa-whatsapp"></i> Whatsapp</a></li>
-    <li><div class="divider"></div></li>
-    <li><a class="subheader">Redes Sociales</a></li>
-    <li><a class="wave-effect" href="https://www.facebook.com/HernanciusAviator"><i class="fab fa-facebook-square"></i> Facebook</a></li>
-    <li><a class="wave-effect" href="https://www.instagram.com/hernanciusaviator/"><i class="fab fa-instagram"></i> Instagram</a></li>
-    <li><a class="wave-effect" href="https://twitter.com/hernanciuavitor"><i class="fab fa-twitter"></i> Twiter</a></li>
-    <li><a class="wave-effect" href="https://www.youtube.com/channel/UCR8m8GygEeTR23bVH9VqFiA"><i class="fab fa-youtube"></i> Youtube</a></li>
-    <li><div class="divider"></div></li>
-    <li><a class="subheader">Mas Sobre mi</a></li>
-    <li><a class="waves-effect" href="www.hrcastell.com"> <i class="material-icons">launch</i>Sobre mi</a></li>
-    <li><a class="waves-effect" href="https://hrcastell.com/"> <i class="material-icons">launch</i>HrCastell</a></li>
-  </ul>
-</div>
-<!-- Seccion del navegador Fin-->
+        <!-- Menú para dispositivos grandes -->
+        <nav class="hidden md:flex items-center space-x-8 text-lg">
+            <a href="index.html" class="hover:text-blue-500">Inicio</a>
+            <a href="index.html#sobre-mi" class="hover:text-blue-500">Sobre Mí</a>
+            <a href="index.html#servicios" class="hover:text-blue-500">Servicios</a>
+            <a href="flightcal.html" class="hover:text-blue-500">FlightCal</a>
+            <a href="conversion.html" class="hover:text-blue-500">Conversión</a>
+            <a href="index.html#twitch" class="hover:text-blue-500">Twitch</a>
+            <a href="index.html#blog" class="hover:text-blue-500">Blog</a>
+            <a href="#" class="hover:text-blue-500">Contacto</a>
+            <!-- Botón de alternancia de tema dentro del menú -->
+            <div class="flex items-center ml-4">
+                <label for="theme-toggle" class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="theme-toggle" class="sr-only" onclick="toggleTheme()" />
+                    <div class="w-12 h-6 bg-gray-200 rounded-full p-1 flex items-center dark:bg-gray-600">
+                        <span
+                            class="w-4 h-4 bg-white rounded-full shadow-md transform transition-transform dark:translate-x-6"></span>
+                    </div>
+                </label>
+                <span id="theme-label" class="ml-3 text-gray-700 dark:text-gray-300">Light</span>
+            </div>
+        </nav>
+        <!-- Botón de menú móvil -->
+        <button onclick="toggleMenu()" class="text-gray-600 dark:text-gray-300 md:hidden focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+    </header>
 
-
-<!--Section Hero-->
-  <section id="hero">
-    <div class="slider fullscreen">
-    <ul class="slides">
-      <li>
-        <img src="img/education-2371311_1280.jpg"> <!-- random image -->
-        <div class="caption center-align">
-          <h2 class="black-text">Asesoramientos Aeronáutico </h2>
-          <h4 class="black-text">Complementamos tu aprendizaje</h4>
+    <!-- Menú lateral móvil -->
+    <aside id="mobile-menu"
+        class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 transform -translate-x-full transition-transform duration-300 shadow-lg z-50 md:hidden">
+        <div class="p-6 flex justify-end">
+            <button onclick="toggleMenu()" class="text-gray-600 dark:text-gray-300 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
-      </li>
-      <li>
-        <img src="img/portada/cockpit-1031178_1280.jpg"> <!-- random image -->
-        <div class="caption left-align">
-          <h2 class="black-text">Clases Personalizadas.</h2>
-          <h4 class="black-text">Donde quieras, cuando quieras.</h4>
-        </div>
-      </li>
-      <li>
-        <img src="img/portada/FS2020.jpg"> <!-- random image -->
-        <div class="caption right-align">
-          <h2 class="black-text">Contenido didáctico.</h2>
-          <h4 class="black-text">La simulación es la mejor herramienta.</h4>
-        </div>
-      </li>
-      <li>
-        <img src="img/pexels-matheus-bertelli-2868217.jpg"> <!-- random image -->
-        <div class="caption center-align">
-          <h2 class="white-text">Reforzamos tus conocimientos.</h2>
-          <h4 class="white-text">Conoce y aprende lo que se requiere para ser piloto privado</h4>
-        </div>
-      </li>
-    </ul>
-  </div>
-  </section>
+        <nav class="mt-8">
+            <ul class="space-y-6 text-center text-lg font-semibold">
+                <li><a href="index.html" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Inicio</a></li>
+                <li><a href="index.html#sobre-mi" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Sobre Mí</a></li>
+                <li><a href="index.html#servicios" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Servicios</a></li>
+                <li><a href="flightcal.html" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">FlightCal</a></li>
+                <li><a href="conversion.html" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Conversión</a></li>
+                <li><a href="index.html#twitch" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Twitch</a></li>
+                <li><a href="index.html#blog" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Blog</a></li>
+                <li><a href="#" class="block text-gray-700 dark:text-gray-200 hover:text-blue-500">Contacto</a></li>
+                <!-- Botón de alternancia de tema dentro del menú móvil -->
+                <li class="mt-4">
+                    <div class="flex justify-center items-center">
+                        <label for="theme-toggle-mobile" class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="theme-toggle-mobile" class="sr-only" onclick="toggleTheme()" />
+                            <div class="w-12 h-6 bg-gray-200 rounded-full p-1 flex items-center dark:bg-gray-600">
+                                <span
+                                    class="w-4 h-4 bg-white rounded-full shadow-md transform transition-transform dark:translate-x-6"></span>
+                            </div>
+                        </label>
+                        <span id="theme-label" class="ml-3 text-gray-700 dark:text-gray-300">Light</span>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </aside>
 
+    <main class="pt-20">
 
-  <!--seccion Info-->
+        <!-- Hero Section -->
+        <section class="relative h-screen overflow-hidden">
+            <div class="absolute inset-0 z-10">
+                <!-- Carrusel de Imágenes -->
+                <div class="carousel">
+                    <div class="absolute inset-0 bg-cover bg-center carousel-image opacity-100 transition-opacity duration-1000 ease-in-out"
+                        style="background-image: url('images/aviation-bg1.jpg');"></div>
+                    <div class="absolute inset-0 bg-cover bg-center carousel-image opacity-0 transition-opacity duration-1000 ease-in-out"
+                        style="background-image: url('images/aviation-bg2.jpg');"></div>
+                    <div class="absolute inset-0 bg-cover bg-center carousel-image opacity-0 transition-opacity duration-1000 ease-in-out"
+                        style="background-image: url('images/aviation-bg3.jpg');"></div>
+                </div>
+            </div>
 
-        <div class="container">
-          <div class="section">
-  <!--bienvenida-->          
-            <div class="row">
-              <div class="col s12 center">
-                <h3 class="header">Bienvenido a mi espacio aéreo Hernancius Aviator.</h3>
-            <br>
-            <br> 
-                <p class="center-align light flow-text">Te ofrecemos una nueva alternativa y te ayudamos a elegir la mejor opción para que inicies tu curso de piloto  privado. 
-                  Aquí podrás reforzar el contenido visto en tus clases y también te ayudamos a mejorar tus habilidades, de manera, de hacer de ti un mejor piloto. 
-                  También contaras con nuestra instrucción personalizada, con la que podrás disponer de ella en cualquier momento, aclararemos dudas y mejoraremos tu método de estudio.
+            <!-- Efecto de Atenuación -->
+            <div class="absolute inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-20"></div>
+
+            <!-- Texto sobre el Hero -->
+            <div class="relative z-30 h-full flex flex-col justify-center items-center text-center text-white">
+                <h1 class="text-5xl font-bold">Vuela Alto</h1>
+                <p class="mt-4 text-xl">Aprende a Volar con un Piloto Apasionado</p>
+                <a href="#" class="mt-6 bg-blue-500 dark:bg-blue-700 text-white px-6 py-3 rounded-full text-lg">Comienza
+                    tu Viaje</a>
+            </div>
+        </section>
+
+        
+        <section class="bg-gray-100 dark:bg-gray-800 py-16">
+            <div class="container mx-auto text-center">
+                <blockquote class="text-3xl italic font-semibold text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
+                    "Una vez que hayas probado el vuelo, caminarás por la tierra con la vista mirando al cielo, porque
+                    ya has estado allí y siempre querrás volver."
+                </blockquote>
+                <p class="mt-4 text-xl text-gray-600 dark:text-gray-400">Leonardo da Vinci</p>
+            </div>
+        </section>
+        <section class="container mx-auto p-8">
+            <!-- Introducción Breve -->
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold">¿Quién Soy?</h2>
+                <p class="mt-4 text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+                    Soy un piloto apasionado con años de experiencia en la aviación. Mi misión es ayudar a otros a
+                    alcanzar sus sueños de volar, ofreciendo una formación completa y personalizada en todas las áreas
+                    de la aviación.
                 </p>
-              </div>
             </div>
 
-            <br>
-            <hr>
-            <br>
-<!--presenteacion-->
-            <div class="row">
-              <div class="col s12 l6 center">
-                <img class="responsive-img materialboxed hoverable" src="img/pexels-snapwire-101522.jpg">
-              </div>
-              <div class="col s12 l6 center">
-                <h4 class="subheader">Ponle alas a tus sueños.</h4>
-                <p class="center-align light flow-text">Si estas interesando en ser piloto privado o tu sueño es ser piloto comercial, pero no sabes por donde iniciar, no sabes donde realizar el curso, o si tienes dudas de cual es tu mejor opción. Te brindamos todas la mejor asesoría.</p>
-              </div>
-            </div>
-
-            <br>
-            <hr>
-            <br>
-<!--card-->
-            <div class="row">
-              <div class="col s12 center">
-                <h2 class="subheader">Disfruta de mi espacio aéreo</h2>
-                <p class="center-align light flow-text">
-                  Tenemos preparado una serie de eventos en los que podrás participar y así ampliar tu conocimiento de una manera interactiva.
-                </p>
-              </div>
-
-              <div class="col s12 l4">
-                <div class="card hoverable">
-                  <div class="card-image waves-effect waves-block waves-light">
-                    <img class="activator" src="img/web1.png">
-                  </div>
-                  <div class="card-content">
-                    <span class="card-title activator grey-text text-darken-4">Unete a nuestro Canal<i class="material-icons right">more_vert</i></span>
-                    <p><a href="pag/contenido.html#discord">Entra e nuestro canal</a></p>
-                  </div>
-                  <div class="card-reveal">
-                    <span class="card-title grey-text text-darken-4">Sigueme en Discord<i class="material-icons right">close</i></span>
-                    <p>En nuestro canal de Discord podrás interactuar directamente conmigo, de manera de brindarte atención personalizada, en donde te mostrar cómo desarrollar o mejorar tus habilidades de piloto.</p>
-                    <br>
-                    <p>Con esta fantástica plataforma estarás informado de los streaming, vuelos, clases y mucho más.</p>
-                  </div>
+            <!-- Servicios Destacados -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Servicio 1: Curso de Vuelo -->
+                <div class="relative group">
+                    <img src="images/flight-course-bg.jpg" alt="Curso de Vuelo"
+                        class="w-full h-64 object-cover rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-105">
+                    <div
+                        class="absolute inset-0 bg-black bg-opacity-50 rounded-xl flex flex-col justify-center items-center text-center text-white p-4">
+                        <h3 class="text-3xl font-semibold mb-2">Curso de Vuelo</h3>
+                        <p class="text-lg">
+                            Clases teóricas y prácticas diseñadas para todos los niveles, desde principiantes hasta
+                            avanzados.
+                        </p>
+                    </div>
                 </div>
-              </div>
 
-              <div class="col s12 l4">
-                <div class="card hoverable" >
-                  <div class="card-image waves-effect waves-block waves-light">
-                    <img class="activator" src="img/web2.png">
-                  </div>
-                  <div class="card-content">
-                    <span class="card-title activator grey-text text-darken-4 center">Flight Simulator 2020<i class="material-icons right">more_vert</i></span>
-                    <p><a href="https://www.flightsimulator.com/">Descubrelo</a></p>
-                  </div>
-                  <div class="card-reveal">
-                    <span class="card-title grey-text text-darken-4">Flight Simulator 2020<i class="material-icons right">close</i></span>
-                    <p>En el nuevo Flight Simulator 2020 como herramienta de entrenamiento, transmitire vía streaming todos mis conocimientos prácticos, para que puedas desarrollar o mejorar las habilidades que necesitas para ser un piloto.</p>
-                  </div>
+                <!-- Servicio 2: Simulador de Vuelo -->
+                <div class="relative group">
+                    <img src="images/flight-simulator-bg.jpg" alt="Simulador de Vuelo"
+                        class="w-full h-64 object-cover rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-105">
+                    <div
+                        class="absolute inset-0 bg-black bg-opacity-50 rounded-xl flex flex-col justify-center items-center text-center text-white p-4">
+                        <h3 class="text-3xl font-semibold mb-2">Simulador de Vuelo</h3>
+                        <p class="text-lg">
+                            Utiliza Microsoft Flight Simulator como herramienta avanzada para mejorar tus habilidades de
+                            vuelo.
+                        </p>
+                    </div>
                 </div>
-              </div>
 
-              <div class="col s12 l4">
-                <div class="card hoverable">
-                  <div class="card-image waves-effect waves-block waves-light">
-                    <img class="activator" src="img/web3.png">
-                  </div>
-                  <div class="card-content">
-                    <span class="card-title activator grey-text text-darken-4">Streaming on twitch<i class="material-icons right">more_vert</i></span>
-                    <p><a href="pag/contenido.html#twitch">Sigueme en vivo</a></p>
-                  </div>
-                  <div class="card-reveal">
-                    <span class="card-title grey-text text-darken-4">Streaming on twitch<i class="material-icons right">close</i></span>
-                    <p>Twitch se ha convertido en la mejor plataforma de streaming por elección de un número de personas, por ello te invito a que formes parte de esta comunidad en donde estaré transmitiendo mis enseñanzas académicas a nivel aeronáutico y podrás aprender mucho sobre este increíble y maravilloso mundo.</p>
-                  </div>
+                <!-- Servicio 3: Formación Personalizada -->
+                <div class="relative group">
+                    <img src="images/personal-training-bg.jpg" alt="Formación Personalizada"
+                        class="w-full h-64 object-cover rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-105">
+                    <div
+                        class="absolute inset-0 bg-black bg-opacity-50 rounded-xl flex flex-col justify-center items-center text-center text-white p-4">
+                        <h3 class="text-3xl font-semibold mb-2">Formación Personalizada</h3>
+                        <p class="text-lg">
+                            Programas de entrenamiento adaptados a tus necesidades y objetivos, con seguimiento
+                            individual.
+                        </p>
+                    </div>
                 </div>
-              </div>
-
             </div>
-            
-          </div>
-        </div>
+        </section>
 
-    <div class="parallax-container">
-      <div class="parallax responsive-img"><img src="img/portada/pexels-thisisengineering-3862634.jpg"></div>
-    </div>
+<br>
+<br>
 
-  <!--Boton de llamada fijo-->
-
-  <div class="fixed-action-btn">
-    <a class="btn-floating btn-large teal accent-3 pulse" href="tel:+56973126500" target="_blank">
-      <i class="large material-icons">call</i>
-    </a>
-  </div>
-
-  <!--Footer section-->
-
-  <footer class="page-footer  blue-grey darken-4">
-          <div class="container">
-            <div class="row">
-              <div class="col l6 s12">
-                <h4 class="white-text">Contacto</h4>
-                <p class="grey-text text-lighten-4">Puedes contactarme para recibir más información: </p>
-                <p class="grey-text text-lighten-4"><i class="fas fa-envelope blue-text"></i> contacto@hernanciusaviator.com</p>
-                <a class="waves-effect waves-green btn black-text teal accent-3 pulse" href="https://wa.me/56973126500" target ="_blank"><i class="fab fa-whatsapp"></i> Whatsapp</a>
-              </div>
-              <div class="col l4 offset-l2 s12">
-                <h4 class="white-text">Redes Sociales</h4>
-                <ul>
-                  <li><a class="grey-text text-lighten-3" href="https://www.facebook.com/HernanciusAviator"><i class="fab fa-facebook-square blue-text"></i> Facebook</a></li>
-                  <li><a class="grey-text text-lighten-3" href="https://www.instagram.com/hernanciusaviator/"><i class="fab fa-instagram purple-text"></i> Instagram</a></li>
-                  <li><a class="grey-text text-lighten-3" href="https://twitter.com/hernanciuavitor"><i class="fab fa-twitter blue-text"></i> Twiter</a></li>
-                  <li><a class="grey-text text-lighten-3" href="https://www.youtube.com/channel/UCR8m8GygEeTR23bVH9VqFiA"><i class="fab fa-youtube red-text"></i> Youtube</a></li>
-                </ul>
-              </div>
+        <footer class="bg-white dark:bg-gray-900 py-12">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <!-- Columna 1: Logo y Redes Sociales -->
+                    <div class="flex flex-col items-center md:items-start">
+                        <img src="images/logo.png" alt="Hernancius Aviator" class="h-14 mb-6">
+                        <div class="flex space-x-8 mt-5">
+                            <a href="https://www.facebook.com/hr.aviator/" target="_blank"
+                                class="text-blue-400 hover:text-blue-300 transition-colors duration-300">
+                                <i class="fab fa-facebook-f fa-2x"></i>
+                            </a>
+                            <a href="https://www.instagram.com/hernanciusaviator/" target="_blank"
+                                class="text-pink-400 hover:text-pink-300 transition-colors duration-300">
+                                <i class="fab fa-instagram fa-2x"></i>
+                            </a>
+                            <a href="https://x.com/hernanciusaviat?t" target="_blank"
+                                class="text-blue-400 hover:text-blue-300 transition-colors duration-300">
+                                <i class="fab fa-twitter fa-2x"></i>
+                            </a>
+                            <a href="https://www.twitch.tv/hernancius_aviator" target="_blank"
+                                class="text-purple-400 hover:text-purple-300 transition-colors duration-300">
+                                <i class="fab fa-twitch fa-2x"></i>
+                            </a>
+                            <a href="http://www.youtube.com/@hernancius_aviator" target="_blank"
+                                class="text-red-500 hover:text-red-400 transition-colors duration-300">
+                                <i class="fab fa-youtube fa-2x"></i>
+                            </a>
+                        </div>
+                        <br>
+                    </div>
+                    <!-- Columna 2: Navegación -->
+                    <div class="flex flex-col justify-center">
+                        <h3 class="text-xl font-bold mb-4 text-gray-300">Navegación</h3>
+                        <br>
+                        <ul class="space-y-2">
+                            <li><a href="index.html" class="hover:text-gray-300 transition-colors duration-300">Inicio</a></li>
+                            <li><a href="index.html#sobre-mi" class="hover:text-gray-300 transition-colors duration-300">Sobre
+                                    Mí</a></li>
+                            <li><a href="index.html#servicios" class="hover:text-gray-300 transition-colors duration-300">Servicios</a></li>
+                            <li><a href="flightcal.html" class="hover:text-gray-300 transition-colors duration-300">FlightCal</a></li>
+                            <li><a href="conversion.html" class="hover:text-gray-300 transition-colors duration-300">Conversión</a></li>
+                            <li><a href="index.html#twitch" class="hover:text-gray-300 transition-colors duration-300">Twitch</a></li>
+                            <li><a href="index.html#blog" class="hover:text-gray-300 transition-colors duration-300">Blog</a></li>
+                            <li><a href="#" class="hover:text-gray-300 transition-colors duration-300">Contacto</a></li>
+                        </ul>
+                    </div>
+        
+                    <!-- Columna 3: Contacto y Política -->
+                    <div class="flex flex-col justify-center">
+                        <h3 class="text-xl font-bold mb-4 text-gray-300">Contacto</h3>
+                        <p class="mb-2">Email: <a href="mailto:contacto@hernancius-aviator.com"
+                                class="text-blue-400 hover:text-blue-300 transition-colors duration-300">contacto@hernancius-aviator.com</a>
+                        </p>
+        
+                        <h3 class="text-xl font-bold mt-8 mb-4 text-gray-300">Política</h3>
+                        <ul class="space-y-2">
+                            <li><a href="/politica-privacidad"
+                                    class="hover:text-gray-300 transition-colors duration-300">Política de
+                                    Privacidad</a></li>
+                            <li><a href="/terminos-servicio"
+                                    class="hover:text-gray-300 transition-colors duration-300">Términos de Servicio</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <br>
+                <hr>
+                <br>
+                <!-- Segmento de Derechos Reservados -->
+                <div class="border-t border-gray-700 mt-12 pt-8 text-left text-gray-400">
+                    <p> 2023 Hernancius Aviator. Todos los derechos reservados.</p>
+                </div>
+                <br>
             </div>
-          </div>
-          <div class="footer-copyright">
-            <div class="container">
-            © 2018 – 
-            <script type="text/javascript">
-              document.write(new Date().getFullYear());
-            </script>
-            <noscript>
-              2021
-            </noscript>Todo los derechos reservados  |  Made by <a class="blue-text text-lighten-3" href="https://hrcastell.com">Hr-Castell</a> on Materialize
-            </div>
-          </div>
         </footer>
+        
+        <script>
+            // Función para mostrar el rango de años
+            const startYear = 2019;
+            const currentYear = new Date().getFullYear();
+            const yearRange = startYear === currentYear ? startYear : `${startYear} - ${currentYear}`;
+            document.getElementById('year-range').textContent = yearRange;
+        </script>
+        
 
+    </main>
 
-  <!--  Scripts-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="js/materialize.min.js"></script>
-  <script src="js/init.js"></script>
+    <!-- Scripts -->
+    <script src="js/twitch-api.js"></script>
+    <script>
+        // Configuración del modal de Twitch
+        document.addEventListener('DOMContentLoaded', function() {
+            const configButton = document.getElementById('configure-twitch');
+            const closeButton = document.getElementById('close-twitch-modal');
+            const saveButton = document.getElementById('save-twitch-config');
+            const modal = document.getElementById('twitch-config-modal');
+            
+            // Abrir modal
+            configButton.addEventListener('click', function() {
+                modal.classList.remove('hidden');
+                
+                // Cargar valores guardados
+                const savedToken = localStorage.getItem('twitch_access_token') || '';
+                const savedChannel = localStorage.getItem('twitch_channel') || 'tu_canal';
+                
+                document.getElementById('twitch-token').value = savedToken;
+                document.getElementById('twitch-channel').value = savedChannel;
+            });
+            
+            // Cerrar modal
+            closeButton.addEventListener('click', function() {
+                modal.classList.add('hidden');
+            });
+            
+            // Guardar configuración
+            saveButton.addEventListener('click', function() {
+                const token = document.getElementById('twitch-token').value;
+                const channel = document.getElementById('twitch-channel').value;
+                
+                if (token && channel) {
+                    localStorage.setItem('twitch_access_token', token);
+                    localStorage.setItem('twitch_channel', channel);
+                    
+                    // Actualizar la configuración en el script de Twitch
+                    if (typeof setTwitchToken === 'function') {
+                        setTwitchToken(token);
+                    }
+                    
+                    // Recargar la página para aplicar los cambios
+                    window.location.reload();
+                }
+                
+                modal.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
 
-  </body>
 </html>

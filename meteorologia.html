@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meteorología - Hernancius Aviator</title>
+    <link href="dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/weather-decoder.js"></script>
+    <script src="js/weather-api.js"></script>
+    <link href="css/chart-icons.css" rel="stylesheet">
+    <style>
+        .content-card {
+            transition: transform 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+        }
+        .weather-detail {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .weather-phenomena {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-radius: 9999px;
+            margin: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .tab-button.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+        .weather-tab-content {
+            display: none;
+        }
+        .weather-tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="bg-light-background text-light-text dark:bg-dark-background dark:text-dark-text">
+    <!-- Header -->
+    <header class="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 fixed w-full z-40 p-4 flex justify-between items-center transition-all duration-300">
+        <!-- Logo -->
+        <div class="text-2xl font-bold">
+            <img src="images/logo.png" alt="Mi Logo" class="h-12">
+        </div>
+        <!-- Menú para dispositivos grandes -->
+        <nav class="hidden md:flex items-center space-x-8 text-lg">
+            <a href="index.html" class="hover:text-blue-500">Inicio</a>
+            <a href="flightcal.html" class="hover:text-blue-500">FlightCal</a>
+            <a href="conversion.html" class="hover:text-blue-500">Conversión</a>
+            <!-- Botón de alternancia de tema -->
+            <div class="flex items-center ml-4">
+                <label for="theme-toggle" class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="theme-toggle" class="sr-only" onclick="toggleTheme()" />
+                    <div class="w-12 h-6 bg-gray-200 rounded-full p-1 flex items-center dark:bg-gray-600">
+                        <span class="w-4 h-4 bg-white rounded-full shadow-md transform transition-transform dark:translate-x-6"></span>
+                    </div>
+                </label>
+                <span id="theme-label" class="ml-3 text-gray-700 dark:text-gray-300">Light</span>
+            </div>
+        </nav>
+        <!-- Botón de menú móvil -->
+        <button onclick="toggleMenu()" class="text-gray-600 dark:text-gray-300 md:hidden focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </header>
+
+    <!-- Menú móvil -->
+    <div id="mobile-menu" class="fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 bg-white dark:bg-gray-800 w-64 z-50 md:hidden">
+        <div class="p-6">
+            <button onclick="toggleMenu()" class="absolute top-4 right-4">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <nav class="mt-8">
+                <ul class="space-y-4">
+                    <li><a href="index.html" class="block hover:text-blue-500">Inicio</a></li>
+                    <li><a href="flightcal.html" class="block hover:text-blue-500">FlightCal</a></li>
+                    <li><a href="conversion.html" class="block hover:text-blue-500">Conversión</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <main class="pt-20">
+        <!-- Hero Section -->
+        <section class="relative bg-blue-600 text-white py-20">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Meteorología</h1>
+                    <p class="text-xl opacity-90">Comprende los fenómenos meteorológicos y su impacto en la aviación</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contenido Principal -->
+        <section class="py-16">
+            <div class="container mx-auto px-4">
+                <!-- METAR/TAF -->
+                <div class="mb-16">
+                    <h2 class="text-3xl font-bold mb-8">Meteorología Aeronáutica</h2>
+                    
+                    <!-- Tabs de meteorología -->
+                    <div class="flex flex-wrap gap-4 mb-8">
+                        <button class="tab-button active" onclick="showWeatherTab('metar')">
+                            <i class="fas fa-cloud mr-2"></i>Decodificador METAR/TAF
+                        </button>
+                        <button class="tab-button" onclick="showWeatherTab('weather-map')">
+                            <i class="fas fa-map-marked-alt mr-2"></i>Carta Meteorológica
+                        </button>
+                    </div>
+
+                    <!-- Contenido meteorológico -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg mb-8">
+                        <!-- Tab METAR/TAF -->
+                        <div id="metar" class="weather-tab-content active">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-4">Decodificador METAR/TAF</h3>
+                                    <div class="space-y-4">
+                                        <!-- Búsqueda de Aeropuerto -->
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium mb-2">Código ICAO del Aeropuerto</label>
+                                            <div class="flex gap-2">
+                                                <div class="relative flex-1">
+                                                    <input type="text" id="icao-input" 
+                                                        class="w-full p-2 border rounded dark:bg-gray-700" 
+                                                        placeholder="Ej: SCEL"
+                                                        onkeypress="handleKeyPress(event)"
+                                                        maxlength="4">
+                                                    <div id="airport-suggestions" class="hidden absolute w-full mt-1 bg-white dark:bg-gray-800 border rounded-md shadow-lg z-10">
+                                                        <!-- Las sugerencias se agregarán dinámicamente -->
+                                                    </div>
+                                                </div>
+                                                <button onclick="getMetar()" id="metar-btn"
+                                                    class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors">
+                                                    <i class="fas fa-cloud mr-2"></i>METAR
+                                                </button>
+                                                <button onclick="getTaf()" id="taf-btn"
+                                                    class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors">
+                                                    <i class="fas fa-clock mr-2"></i>TAF
+                                                </button>
+                                            </div>
+                                            <div id="loading" class="hidden mt-2 text-sm text-blue-500">
+                                                <i class="fas fa-spinner fa-spin mr-2"></i>Cargando...
+                                            </div>
+                                        </div>
+
+                                        <!-- Aeropuertos Favoritos -->
+                                        <div id="favorite-airports" class="mb-4">
+                                            <h4 class="text-sm font-medium mb-2">Aeropuertos Favoritos</h4>
+                                            <div class="flex flex-wrap gap-2" id="favorite-airports-list">
+                                                <!-- Los favoritos se agregarán dinámicamente -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Búsquedas Recientes -->
+                                        <div id="recent-searches" class="mb-4">
+                                            <h4 class="text-sm font-medium mb-2">Búsquedas Recientes</h4>
+                                            <div class="flex flex-wrap gap-2" id="recent-searches-list">
+                                                <!-- Las búsquedas recientes se agregarán dinámicamente -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Información del Aeropuerto -->
+                                        <div id="station-info" class="hidden weather-detail">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <h5>Información del Aeropuerto</h5>
+                                                <button id="favorite-btn" class="text-yellow-400 hover:text-yellow-300 transition-colors">
+                                                    <i class="far fa-star"></i>
+                                                </button>
+                                            </div>
+                                            <div id="station-content"></div>
+                                        </div>
+
+                                        <!-- Reporte Meteorológico -->
+                                        <div id="weather-info" class="weather-info hidden">
+                                            <div class="mb-4">
+                                                <h4 class="font-semibold mb-2">Reporte Original</h4>
+                                                <pre id="weather-raw" class="text-sm p-2 bg-gray-100 dark:bg-gray-800 rounded overflow-x-auto"></pre>
+                                            </div>
+                                            <div id="weather-decoded" class="space-y-4"></div>
+                                        </div>
+
+                                        <!-- Gráficos de Tendencias -->
+                                        <div id="weather-trends" class="hidden">
+                                            <h4 class="font-semibold mb-4">Tendencias Meteorológicas</h4>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div class="weather-detail">
+                                                    <h5>Temperatura</h5>
+                                                    <canvas id="temperature-chart"></canvas>
+                                                </div>
+                                                <div class="weather-detail">
+                                                    <h5>Viento</h5>
+                                                    <canvas id="wind-chart"></canvas>
+                                                </div>
+                                                <div class="weather-detail">
+                                                    <h5>Visibilidad</h5>
+                                                    <canvas id="visibility-chart"></canvas>
+                                                </div>
+                                                <div class="weather-detail">
+                                                    <h5>Presión</h5>
+                                                    <canvas id="pressure-chart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Guía de Interpretación -->
+                                <div class="space-y-6">
+                                    <div class="weather-detail">
+                                        <h4 class="font-semibold mb-4">Guía METAR</h4>
+                                        <ul class="space-y-3">
+                                            <li class="flex items-start">
+                                                <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
+                                                <div>
+                                                    <strong>Formato:</strong> CCCC YYGGggZ AUTO/COR dddff(f)Gfmfm(fm)KT dndndnVdxdxdx
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-wind text-blue-500 mt-1 mr-3"></i>
+                                                <div>
+                                                    <strong>Viento:</strong> ddd = dirección, ff = velocidad, G = ráfaga
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-eye text-blue-500 mt-1 mr-3"></i>
+                                                <div>
+                                                    <strong>Visibilidad:</strong> VVVV = visibilidad horizontal en metros
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="weather-detail">
+                                        <h4 class="font-semibold mb-4">Guía TAF</h4>
+                                        <ul class="space-y-3">
+                                            <li class="flex items-start">
+                                                <i class="fas fa-clock text-blue-500 mt-1 mr-3"></i>
+                                                <div>
+                                                    <strong>Validez:</strong> Y1Y1G1G1/Y2Y2G2G2
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-exchange-alt text-blue-500 mt-1 mr-3"></i>
+                                                <div>
+                                                    <strong>Cambios:</strong> BECMG, TEMPO, FM, PROB
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Carta Meteorológica -->
+                        <div id="weather-map" class="weather-tab-content">
+                            <div id="map" class="h-96 rounded-lg"></div>
+                        </div>
+                    </div>
+
+                    <!-- Cartas Meteorológicas -->
+                    <div class="mb-16">
+                        <h2 class="text-3xl font-bold mb-8">Análisis de Cartas Meteorológicas</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Cartas de Superficie</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-map text-blue-500 mt-1 mr-3"></i>
+                                        <span>Sistemas de presión</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-temperature-high text-blue-500 mt-1 mr-3"></i>
+                                        <span>Frentes meteorológicos</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-cloud-showers-heavy text-blue-500 mt-1 mr-3"></i>
+                                        <span>Precipitación</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Cartas de Altura</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-layer-group text-blue-500 mt-1 mr-3"></i>
+                                        <span>Niveles de vuelo</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-wind text-blue-500 mt-1 mr-3"></i>
+                                        <span>Vientos en altura</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-temperature-low text-blue-500 mt-1 mr-3"></i>
+                                        <span>Isotermas</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fenómenos Meteorológicos -->
+                    <div>
+                        <h2 class="text-3xl font-bold mb-8">Fenómenos Meteorológicos</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Fenómenos Peligrosos</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-bolt text-blue-500 mt-1 mr-3"></i>
+                                        <span>Tormentas eléctricas</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-snowflake text-blue-500 mt-1 mr-3"></i>
+                                        <span>Engelamiento</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-wind text-blue-500 mt-1 mr-3"></i>
+                                        <span>Turbulencia</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Condiciones Visuales</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-eye text-blue-500 mt-1 mr-3"></i>
+                                        <span>Visibilidad</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-cloud text-blue-500 mt-1 mr-3"></i>
+                                        <span>Techos de nubes</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-smog text-blue-500 mt-1 mr-3"></i>
+                                        <span>Restricciones visuales</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-900 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="text-center md:text-left">
+                    <h3 class="text-lg font-semibold mb-4">Contacto</h3>
+                    <p class="mb-2">Email: info@hernancius.com</p>
+                    <p>Tel: +1234567890</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="hover:text-blue-500">Inicio</a></li>
+                        <li><a href="flightcal.html" class="hover:text-blue-500">FlightCal</a></li>
+                        <li><a href="conversion.html" class="hover:text-blue-500">Conversión</a></li>
+                    </ul>
+                </div>
+                <div class="text-center md:text-right">
+                    <h3 class="text-lg font-semibold mb-4">Síguenos</h3>
+                    <div class="flex justify-center md:justify-end space-x-4">
+                        <a href="#" class="text-2xl hover:text-blue-500"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-2xl hover:text-blue-500"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-2xl hover:text-blue-500"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm text-gray-500">
+                <p>&copy; 2024 Hernancius Aviator. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Variables globales
+        const weatherDecoder = new WeatherDecoder();
+        const weatherAPI = new WeatherAPI();
+        let loadingTimeout;
+        let currentAirport = null;
+        let charts = {};
+
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('metar-btn').disabled = true;
+            document.getElementById('taf-btn').disabled = true;
+            loadingTimeout = setTimeout(() => {
+                hideLoading();
+                alert('La solicitud está tomando más tiempo de lo esperado. Por favor, inténtalo de nuevo.');
+            }, 10000);
+        }
+
+        function hideLoading() {
+            clearTimeout(loadingTimeout);
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('metar-btn').disabled = false;
+            document.getElementById('taf-btn').disabled = false;
+        }
+
+        function handleKeyPress(event) {
+            const input = event.target;
+            const value = input.value.toUpperCase();
+            
+            if (event.key === 'Enter') {
+                getMetar();
+            } else {
+                // Mostrar sugerencias solo si hay 2 o más caracteres
+                if (value.length >= 2) {
+                    showAirportSuggestions(value);
+                } else {
+                    hideAirportSuggestions();
+                }
+            }
+        }
+
+        function showAirportSuggestions(query) {
+            const suggestions = document.getElementById('airport-suggestions');
+            const favorites = weatherAPI.getFavoriteAirports();
+            const recents = weatherAPI.getRecentSearches();
+            
+            // Filtrar aeropuertos que coincidan con la búsqueda
+            const matches = [...favorites, ...recents]
+                .filter(airport => 
+                    airport.icao.includes(query) || 
+                    airport.name.toLowerCase().includes(query.toLowerCase()))
+                .slice(0, 5);
+
+            if (matches.length > 0) {
+                suggestions.innerHTML = matches.map(airport => `
+                    <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                         onclick="selectAirport('${airport.icao}')">
+                        <strong>${airport.icao}</strong> - ${airport.name}
+                    </div>
+                `).join('');
+                suggestions.classList.remove('hidden');
+            } else {
+                hideAirportSuggestions();
+            }
+        }
+
+        function hideAirportSuggestions() {
+            document.getElementById('airport-suggestions').classList.add('hidden');
+        }
+
+        function selectAirport(icao) {
+            document.getElementById('icao-input').value = icao;
+            hideAirportSuggestions();
+            getMetar();
+        }
+
+        function updateFavoriteButton(icao) {
+            const btn = document.getElementById('favorite-btn');
+            const isFavorite = weatherAPI.isFavorite(icao);
+            btn.innerHTML = `<i class="fa${isFavorite ? 's' : 'r'} fa-star"></i>`;
+        }
+
+        function toggleFavorite() {
+            if (!currentAirport) return;
+            
+            const wasAdded = weatherAPI.toggleFavorite(
+                currentAirport.icao, 
+                currentAirport.name
+            );
+            
+            updateFavoriteButton(currentAirport.icao);
+            updateFavoritesList();
+            
+            // Mostrar mensaje de confirmación
+            const message = wasAdded ? 'Agregado a favoritos' : 'Eliminado de favoritos';
+            showToast(message);
+        }
+
+        function updateFavoritesList() {
+            const favorites = weatherAPI.getFavoriteAirports();
+            const container = document.getElementById('favorite-airports-list');
+            
+            if (favorites.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500">No hay aeropuertos favoritos</p>';
+                return;
+            }
+            
+            container.innerHTML = favorites.map(airport => `
+                <button onclick="selectAirport('${airport.icao}')"
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900 rounded-full text-sm hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
+                    ${airport.icao}
+                </button>
+            `).join('');
+        }
+
+        function updateRecentSearches() {
+            const recents = weatherAPI.getRecentSearches();
+            const container = document.getElementById('recent-searches-list');
+            
+            if (recents.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500">No hay búsquedas recientes</p>';
+                return;
+            }
+            
+            container.innerHTML = recents.map(airport => `
+                <button onclick="selectAirport('${airport.icao}')"
+                    class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    ${airport.icao}
+                </button>
+            `).join('');
+        }
+
+        async function displayStationInfo(icao) {
+            try {
+                const stationInfo = await weatherAPI.fetchStationInfo(icao);
+                currentAirport = {
+                    icao: stationInfo.icao,
+                    name: stationInfo.name
+                };
+                
+                const stationDiv = document.getElementById('station-info');
+                const stationContent = document.getElementById('station-content');
+                
+                stationContent.innerHTML = `
+                    <p><strong>Nombre:</strong> ${stationInfo.name}</p>
+                    <p><strong>Ciudad:</strong> ${stationInfo.city || 'N/A'}</p>
+                    <p><strong>País:</strong> ${stationInfo.country || 'N/A'}</p>
+                    <p><strong>Elevación:</strong> ${stationInfo.elevation_m || 'N/A'} metros</p>
+                    <p><strong>Latitud:</strong> ${stationInfo.latitude}°</p>
+                    <p><strong>Longitud:</strong> ${stationInfo.longitude}°</p>
+                `;
+                
+                stationDiv.classList.remove('hidden');
+                updateFavoriteButton(icao);
+                
+                // Buscar aeropuertos cercanos
+                const nearby = await weatherAPI.getNearbyAirports(
+                    stationInfo.latitude,
+                    stationInfo.longitude
+                );
+                
+                // Agregar aeropuertos cercanos si existen
+                if (nearby && nearby.length > 0) {
+                    const nearbyHtml = `
+                        <div class="mt-4">
+                            <h6 class="font-semibold mb-2">Aeropuertos Cercanos:</h6>
+                            <div class="flex flex-wrap gap-2">
+                                ${nearby.slice(0, 5).map(airport => `
+                                    <button onclick="selectAirport('${airport.icao}')"
+                                        class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                        ${airport.icao} (${Math.round(airport.distance)}km)
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    stationContent.innerHTML += nearbyHtml;
+                }
+                
+                // Agregar a búsquedas recientes
+                weatherAPI.addToRecent(stationInfo.icao, stationInfo.name);
+                updateRecentSearches();
+                
+            } catch (error) {
+                console.error('Error al obtener información del aeropuerto:', error);
+            }
+        }
+
+        function createChart(canvasId, data, label, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+            
+            charts[canvasId] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => new Date(d.time).toLocaleTimeString()),
+                    datasets: [{
+                        label: label,
+                        data: data.map(d => d.value),
+                        borderColor: color,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+
+        async function displayMetarTrends(icao) {
+            try {
+                const history = await weatherAPI.getMetarHistory(icao);
+                const trends = history.trends;
+                
+                document.getElementById('weather-trends').classList.remove('hidden');
+                
+                // Crear gráficos
+                createChart('temperature-chart', trends.temperature, 'Temperatura (°C)', '#ef4444');
+                createChart('wind-chart', trends.windSpeed, 'Viento (kt)', '#3b82f6');
+                createChart('visibility-chart', trends.visibility, 'Visibilidad (m)', '#10b981');
+                createChart('pressure-chart', trends.pressure, 'QNH (hPa)', '#8b5cf6');
+                
+            } catch (error) {
+                console.error('Error al obtener tendencias:', error);
+            }
+        }
+
+        async function getMetar() {
+            const icao = document.getElementById('icao-input').value.toUpperCase();
+            if (!weatherAPI.validateIcao(icao)) {
+                alert('Por favor, ingrese un código ICAO válido (4 letras)');
+                return;
+            }
+
+            try {
+                showLoading();
+                const data = await weatherAPI.fetchMetar(icao);
+                displayWeatherInfo('METAR', data.raw);
+                await displayStationInfo(icao);
+                await displayMetarTrends(icao);
+            } catch (error) {
+                alert('Error al obtener datos METAR: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function getTaf() {
+            const icao = document.getElementById('icao-input').value.toUpperCase();
+            if (!weatherAPI.validateIcao(icao)) {
+                alert('Por favor, ingrese un código ICAO válido (4 letras)');
+                return;
+            }
+
+            try {
+                showLoading();
+                const data = await weatherAPI.fetchTaf(icao);
+                displayWeatherInfo('TAF', data.raw);
+                await displayStationInfo(icao);
+            } catch (error) {
+                alert('Error al obtener datos TAF: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayWeatherInfo(type, data) {
+            const weatherInfo = document.getElementById('weather-info');
+            const weatherRaw = document.getElementById('weather-raw');
+            const weatherDecoded = document.getElementById('weather-decoded');
+
+            weatherInfo.classList.remove('hidden');
+            weatherRaw.textContent = data;
+            
+            let decoded;
+            let html = '';
+
+            if (type === 'METAR') {
+                decoded = weatherDecoder.decodeMetar(data);
+                html = generateMetarHtml(decoded);
+            } else {
+                decoded = weatherDecoder.decodeTaf(data);
+                html = generateTafHtml(decoded);
+            }
+
+            weatherDecoded.innerHTML = html;
+        }
+
+        function generateMetarHtml(decoded) {
+            let html = `
+                <div class="weather-detail">
+                    <h5>Información General</h5>
+                    <p>Aeropuerto: ${decoded.aeropuerto}</p>
+                    <p>Observación: ${decoded.tiempo}</p>
+                </div>`;
+
+            if (decoded.viento) {
+                html += `
+                <div class="weather-detail">
+                    <h5>Viento</h5>
+                    <p>Dirección: ${decoded.viento.direccion}</p>
+                    <p>Velocidad: ${decoded.viento.velocidad}</p>
+                    ${decoded.viento.rafaga ? `<p>Ráfaga: ${decoded.viento.rafaga}</p>` : ''}
+                </div>`;
+            }
+
+            if (decoded.visibilidad) {
+                html += `
+                <div class="weather-detail">
+                    <h5>Visibilidad</h5>
+                    <p>${decoded.visibilidad}</p>
+                </div>`;
+            }
+
+            if (decoded.fenomenos && decoded.fenomenos.length > 0) {
+                html += `
+                <div class="weather-detail">
+                    <h5>Fenómenos Meteorológicos</h5>
+                    <div>
+                        ${decoded.fenomenos.map(f => `<span class="weather-phenomena">${f}</span>`).join('')}
+                    </div>
+                </div>`;
+            }
+
+            if (decoded.nubes && decoded.nubes.length > 0) {
+                html += `
+                <div class="weather-detail">
+                    <h5>Nubes</h5>
+                    <ul class="list-disc list-inside">
+                        ${decoded.nubes.map(n => `<li>${n}</li>`).join('')}
+                    </ul>
+                </div>`;
+            }
+
+            if (decoded.temperatura) {
+                html += `
+                <div class="weather-detail">
+                    <h5>Temperatura</h5>
+                    <p>Temperatura: ${decoded.temperatura.temperatura}</p>
+                    <p>Punto de rocío: ${decoded.temperatura.punto_rocio}</p>
+                </div>`;
+            }
+
+            if (decoded.presion) {
+                html += `
+                <div class="weather-detail">
+                    <h5>Presión</h5>
+                    <p>QNH: ${decoded.presion}</p>
+                </div>`;
+            }
+
+            return html;
+        }
+
+        function generateTafHtml(decoded) {
+            let html = `
+                <div class="weather-detail">
+                    <h5>Información General</h5>
+                    <p>Aeropuerto: ${decoded.aeropuerto}</p>
+                    <p>Emisión: ${decoded.tiempo_emision}</p>
+                    <p>Válido: ${decoded.validez.inicio} hasta ${decoded.validez.fin}</p>
+                </div>`;
+
+            decoded.pronosticos.forEach((pronostico, index) => {
+                html += `
+                <div class="weather-detail">
+                    <h5>${pronostico.tipo || `Pronóstico ${index + 1}`}</h5>
+                    ${pronostico.periodo ? `<p>Período: ${pronostico.periodo.inicio} a ${pronostico.periodo.fin}</p>` : ''}
+                    
+                    ${pronostico.condiciones.viento ? `
+                    <div class="mt-2">
+                        <p><strong>Viento:</strong></p>
+                        <p>Dirección: ${pronostico.condiciones.viento.direccion}</p>
+                        <p>Velocidad: ${pronostico.condiciones.viento.velocidad}</p>
+                        ${pronostico.condiciones.viento.rafaga ? `<p>Ráfaga: ${pronostico.condiciones.viento.rafaga}</p>` : ''}
+                    </div>` : ''}
+
+                    ${pronostico.condiciones.visibilidad ? `
+                    <div class="mt-2">
+                        <p><strong>Visibilidad:</strong> ${pronostico.condiciones.visibilidad}</p>
+                    </div>` : ''}
+
+                    ${pronostico.condiciones.fenomenos && pronostico.condiciones.fenomenos.length > 0 ? `
+                    <div class="mt-2">
+                        <p><strong>Fenómenos:</strong></p>
+                        <div>
+                            ${pronostico.condiciones.fenomenos.map(f => `<span class="weather-phenomena">${f}</span>`).join('')}
+                        </div>
+                    </div>` : ''}
+
+                    ${pronostico.condiciones.nubes && pronostico.condiciones.nubes.length > 0 ? `
+                    <div class="mt-2">
+                        <p><strong>Nubes:</strong></p>
+                        <ul class="list-disc list-inside">
+                            ${pronostico.condiciones.nubes.map(n => `<li>${n}</li>`).join('')}
+                        </ul>
+                    </div>` : ''}
+                </div>`;
+            });
+
+            return html;
+        }
+
+        function showWeatherTab(tabId) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.weather-tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Desactivar todos los botones
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Mostrar el tab seleccionado
+            document.getElementById(tabId).classList.add('active');
+            
+            // Activar el botón correspondiente
+            document.querySelector(`button[onclick="showWeatherTab('${tabId}')"]`).classList.add('active');
+        }
+
+        // Inicializar listas de favoritos y recientes
+        updateFavoritesList();
+        updateRecentSearches();
+    </script>
+</body>
+</html>

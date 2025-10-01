@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procedimientos de Vuelo - Hernancius Aviator</title>
+    <link href="dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .content-card {
+            transition: transform 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+
+<body class="bg-light-background text-light-text dark:bg-dark-background dark:text-dark-text">
+    <!-- Header -->
+    <header class="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 fixed w-full z-40 p-4 flex justify-between items-center transition-all duration-300">
+        <!-- Logo -->
+        <div class="text-2xl font-bold">
+            <img src="images/logo.png" alt="Mi Logo" class="h-12">
+        </div>
+        <!-- Menú para dispositivos grandes -->
+        <nav class="hidden md:flex items-center space-x-8 text-lg">
+            <a href="index.html" class="hover:text-blue-500">Inicio</a>
+            <a href="flightcal.html" class="hover:text-blue-500">FlightCal</a>
+            <a href="conversion.html" class="hover:text-blue-500">Conversión</a>
+            <!-- Botón de alternancia de tema -->
+            <div class="flex items-center ml-4">
+                <label for="theme-toggle" class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="theme-toggle" class="sr-only" onclick="toggleTheme()" />
+                    <div class="w-12 h-6 bg-gray-200 rounded-full p-1 flex items-center dark:bg-gray-600">
+                        <span class="w-4 h-4 bg-white rounded-full shadow-md transform transition-transform dark:translate-x-6"></span>
+                    </div>
+                </label>
+                <span id="theme-label" class="ml-3 text-gray-700 dark:text-gray-300">Light</span>
+            </div>
+        </nav>
+        <!-- Botón de menú móvil -->
+        <button onclick="toggleMenu()" class="text-gray-600 dark:text-gray-300 md:hidden focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </header>
+
+    <!-- Menú móvil -->
+    <div id="mobile-menu" class="fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 bg-white dark:bg-gray-800 w-64 z-50 md:hidden">
+        <div class="p-6">
+            <button onclick="toggleMenu()" class="absolute top-4 right-4">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <nav class="mt-8">
+                <ul class="space-y-4">
+                    <li><a href="index.html" class="block hover:text-blue-500">Inicio</a></li>
+                    <li><a href="flightcal.html" class="block hover:text-blue-500">FlightCal</a></li>
+                    <li><a href="conversion.html" class="block hover:text-blue-500">Conversión</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <main class="pt-20">
+        <!-- Hero Section -->
+        <section class="relative bg-blue-600 text-white py-20">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Procedimientos de Vuelo</h1>
+                    <p class="text-xl opacity-90">Domina los procedimientos esenciales para una operación segura y eficiente</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contenido Principal -->
+        <section class="py-16">
+            <div class="container mx-auto px-4">
+                <!-- Procedimientos de Emergencia -->
+                <div class="mb-16">
+                    <h2 class="text-3xl font-bold mb-8">Procedimientos de Emergencia</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                            <h3 class="text-xl font-semibold mb-4">Emergencias en Vuelo</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-engine text-blue-500 mt-1 mr-3"></i>
+                                    <span>Falla de motor</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-fire-extinguisher text-blue-500 mt-1 mr-3"></i>
+                                    <span>Fuego a bordo</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-exclamation-triangle text-blue-500 mt-1 mr-3"></i>
+                                    <span>Pérdida de sistemas críticos</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                            <h3 class="text-xl font-semibold mb-4">Aterrizajes de Emergencia</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-plane-arrival text-blue-500 mt-1 mr-3"></i>
+                                    <span>Aterrizaje forzoso</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-water text-blue-500 mt-1 mr-3"></i>
+                                    <span>Amaraje</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-mountain text-blue-500 mt-1 mr-3"></i>
+                                    <span>Terreno inhóspito</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comunicaciones ATC -->
+                <div class="mb-16">
+                    <h2 class="text-3xl font-bold mb-8">Comunicaciones ATC</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                            <h3 class="text-xl font-semibold mb-4">Fraseología</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-microphone text-blue-500 mt-1 mr-3"></i>
+                                    <span>Fraseología estándar</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-headset text-blue-500 mt-1 mr-3"></i>
+                                    <span>Comunicaciones de emergencia</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-language text-blue-500 mt-1 mr-3"></i>
+                                    <span>Alfabeto aeronáutico</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                            <h3 class="text-xl font-semibold mb-4">Procedimientos Radio</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-broadcast-tower text-blue-500 mt-1 mr-3"></i>
+                                    <span>Cambios de frecuencia</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-signal text-blue-500 mt-1 mr-3"></i>
+                                    <span>Pérdida de comunicaciones</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-double text-blue-500 mt-1 mr-3"></i>
+                                    <span>Colación de instrucciones</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SOP's y Checklists -->
+                <div>
+                    <h2 class="text-3xl font-bold mb-8">SOP's y Checklists</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                            <h3 class="text-xl font-semibold mb-4">Procedimientos Normales</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-clipboard-check text-blue-500 mt-1 mr-3"></i>
+                                    <span>Checklists pre-vuelo</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-plane-departure text-blue-500 mt-1 mr-3"></i>
+                                    <span>Procedimientos de despegue</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-plane-arrival text-blue-500 mt-1 mr-3"></i>
+                                    <span>Procedimientos de aterrizaje</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="content-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
+                            <h3 class="text-xl font-semibold mb-4">Procedimientos Especiales</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-low-vision text-blue-500 mt-1 mr-3"></i>
+                                    <span>Operaciones en baja visibilidad</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-temperature-high text-blue-500 mt-1 mr-3"></i>
+                                    <span>Operaciones en clima extremo</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-mountain text-blue-500 mt-1 mr-3"></i>
+                                    <span>Operaciones en terreno montañoso</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-900 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="text-center md:text-left">
+                    <h3 class="text-lg font-semibold mb-4">Contacto</h3>
+                    <p class="mb-2">Email: info@hernancius.com</p>
+                    <p>Tel: +1234567890</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="hover:text-blue-500">Inicio</a></li>
+                        <li><a href="flightcal.html" class="hover:text-blue-500">FlightCal</a></li>
+                        <li><a href="conversion.html" class="hover:text-blue-500">Conversión</a></li>
+                    </ul>
+                </div>
+                <div class="text-center md:text-right">
+                    <h3 class="text-lg font-semibold mb-4">Síguenos</h3>
+                    <div class="flex justify-center md:justify-end space-x-4">
+                        <a href="#" class="text-2xl hover:text-blue-500"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-2xl hover:text-blue-500"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-2xl hover:text-blue-500"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm text-gray-500">
+                <p>&copy; 2024 Hernancius Aviator. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const isDarkMode = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            document.getElementById('theme-label').textContent = isDarkMode ? 'Dark' : 'Light';
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-label').textContent = 'Dark';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-label').textContent = 'Light';
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('-translate-x-full');
+        }
+    </script>
+</body>
+</html>
