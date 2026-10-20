@@ -1,0 +1,2453 @@
+{
+  "project_code": "AVIATOR",
+  "source": "Plans/DEVELOPMENT_PLAN.md",
+  "generatedAt": "2026-10-20",
+  "totals": {
+    "tasks": 141,
+    "estimateHours": 632.5,
+    "developmentHours": 593.0,
+    "administrativeHours": 39.5
+  },
+  "tasks": [
+    {
+      "id": "AV-001",
+      "title": "Confirm hosting environment (Node 20 confirmed)",
+      "description": "Node.js on cPanel is confirmed as 20.20.2, so the target is Node 20 LTS (package.json engines '>=20 <21'). Still to verify: Setup Node.js App (Passenger) behaviour, PostgreSQL 10.23 access, SSL, subdomain/path, SSH, cron, and resource limits for a public multi-user SaaS.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 1.5,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [],
+      "acceptanceCriteria": [
+        "Written note covers PostgreSQL version, SSL, SSH/cron and resource limits",
+        "Both package.json files declare engines node '>=20 <21'",
+        "A test DB and DB user exist in cPanel"
+      ]
+    },
+    {
+      "id": "AV-100",
+      "title": "Map the DGAC Chile PPL syllabus and exam format (DAN/DAR)",
+      "description": "The launch market is Chile and the regulatory basis is DGAC Chile (DAN/DAR, e.g. the private pilot licensing norm DAN 61). The owner documents the PPL ground-school subjects, exam format (questions, duration, pass mark, per-subject rules) and the norm references with their versions. FAA material is used only as a reference source, never as the compliance basis. Future markets (Ecuador RDAC, Bolivia RAB, Peru RAP...) must fit the same authority model.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 3,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [],
+      "acceptanceCriteria": [
+        "The DGAC Chile subjects list and exam rules are recorded with DAN/DAR references and versions",
+        "Exam rules are documented for AV-143/AV-145",
+        "The list of future authorities is recorded for the authority model (AV-170)"
+      ]
+    },
+    {
+      "id": "AV-002",
+      "title": "Close open product decisions",
+      "description": "Close the remaining product decisions: Roboto vs Roboto Thin, colour palette, keep or drop the reserved sync columns, airport data source, and whether the public landing/Twitch content stays. Multi-user public sign-up and cookie-based sessions are already decided.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 3,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [],
+      "acceptanceCriteria": [
+        "Every open question in section 9 that is marked for AV-002 has an answer recorded in the Decisions section",
+        "Scope changes are reflected in the task list before Phase 1 starts"
+      ]
+    },
+    {
+      "id": "AV-101",
+      "title": "Owner content and question bank authoring plan",
+      "description": "The platform owner (a flight instructor) authors all lessons and questions. Agree the authoring schedule per subject and the minimum content for launch. Authoring is owner work and is not included in development hours.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 3,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-100"
+      ],
+      "acceptanceCriteria": [
+        "Authoring schedule per subject agreed",
+        "Launch minimum per subject (modules, questions) defined"
+      ]
+    },
+    {
+      "id": "AV-102",
+      "title": "Trial and grace period decision",
+      "description": "Price (5,000 CLP/month, single plan) and the free vs paid matrix are decided. FREE, no login: flight calculator, unit converter, METAR/TAF decoder, airspeed calculator. PAID: everything else. Still open: whether to offer a free trial and how long, and the past_due grace days.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 1,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-100"
+      ],
+      "acceptanceCriteria": [
+        "Trial yes/no (and length) recorded",
+        "Grace days recorded"
+      ]
+    },
+    {
+      "id": "AV-103",
+      "title": "Mercado Pago setup (subscriptions, sandbox, webhooks)",
+      "description": "Decided: Mercado Pago (the owner already has an account), using subscriptions (preapproval) in CLP. Generate test and production credentials, create sandbox test users (buyer and seller), and create the preapproval plan(s) in CLP. Configure the webhook URL and secret signature for x-signature validation. Confirm SII invoicing (boleta) obligations. Check whether the official `mercadopago` npm SDK is pure JS; if it is not, use plain HTTPS calls.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 3,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-102"
+      ],
+      "acceptanceCriteria": [
+        "Test and production credentials are stored in the password manager",
+        "Sandbox buyer/seller test users exist",
+        "A CLP preapproval plan exists in sandbox",
+        "Webhook URL and signature secret are configured; SDK purity check recorded",
+        "SII invoicing obligation documented"
+      ]
+    },
+    {
+      "id": "AV-105",
+      "title": "Legal documents under Chilean law (confirm with legal counsel)",
+      "description": "Draft the Terms of Service, Privacy Policy and cookie notice under Ley 19.628 and the new Ley 21.719 (personal data protection and the new data protection agency). Cover legal bases and consent, data categories, retention, processors (Google, Meta, payment provider, hosting), international transfers, data subject rights (access, rectification, deletion, opposition, portability) and the breach notification duty. Must be confirmed with legal counsel.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 6,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-100"
+      ],
+      "acceptanceCriteria": [
+        "Versioned documents in Spanish exist",
+        "Processors, international transfers and retention are listed",
+        "Reviewed and approved by legal counsel"
+      ]
+    },
+    {
+      "id": "AV-104",
+      "title": "Register Google and Facebook OAuth apps",
+      "description": "Create the Google Cloud OAuth client (consent screen, scopes openid/email/profile) and the Meta app (Facebook Login, email permission). Set the redirect URIs for local and production, the privacy policy and terms URLs, and plan for Facebook app review.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 3,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-105"
+      ],
+      "acceptanceCriteria": [
+        "Client IDs and secrets exist for dev and production in the password manager",
+        "Consent screens show app name, logo, privacy policy and terms",
+        "Facebook app review requirements are listed with a submission date"
+      ]
+    },
+    {
+      "id": "AV-003",
+      "title": "Rotate exposed API credentials",
+      "description": "The static prototype commits an OpenWeatherMap API key in js/config.js and a Twitch client id/token flow in js/twitch-api.js. Rotate/revoke the keys and plan to keep secrets only in backend .env files.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 1,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [],
+      "acceptanceCriteria": [
+        "Old OpenWeatherMap key is revoked and a new one is issued",
+        "No API key remains in any file served to the browser",
+        "Secrets are documented as backend-only environment variables"
+      ]
+    },
+    {
+      "id": "AV-004",
+      "title": "Register external data/API accounts",
+      "description": "Get the AVWX token (METAR/TAF) and confirm its plan limits. Confirm OpenWeatherMap tile usage limits and the OurAirports licence for importing airport data.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 1,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-003"
+      ],
+      "acceptanceCriteria": [
+        "AVWX and OpenWeatherMap credentials are stored in a password manager",
+        "Rate limits / quotas of each API are recorded in the plan risks"
+      ]
+    },
+    {
+      "id": "AV-005",
+      "title": "Prepare logo and icon assets",
+      "description": "Provide logo.png (1024x1024), logo_icon.png, logo_white.png for dark mode, favicon and PWA-size icons (192/512). The logo file referenced by the docs is not in the repository yet.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 2,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [],
+      "acceptanceCriteria": [
+        "All logo variants exist in frontend/public or an assets folder",
+        "Favicon renders in Chrome and Safari"
+      ]
+    },
+    {
+      "id": "AV-006",
+      "title": "Restructure repository as monorepo",
+      "description": "Create backend/ and frontend/ folders, move static prototypes (index.html, flightcal.html, conversion.html, meteorologia.html, navegacion.html, procedimientos.html, script.js, js/, css/) into legacy/ for reference, add root .gitignore (.env, node_modules, uploads), .editorconfig and root README.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-002"
+      ],
+      "acceptanceCriteria": [
+        "Repository has backend/, frontend/ and legacy/ folders",
+        ".env and node_modules are ignored by git",
+        "Legacy pages still open locally from legacy/"
+      ]
+    },
+    {
+      "id": "AV-007",
+      "title": "Local PostgreSQL 10 with Docker Compose",
+      "description": "docker-compose.yml with postgres:10 (pinned to 10.23 if that tag exists), a named volume and a healthcheck. backend/.env.example documents DATABASE_URL, JWT_SECRET, CSRF_SECRET, CORS_ORIGINS, APP_BASE_URL, GOOGLE_CLIENT_ID/SECRET, FACEBOOK_APP_ID/SECRET, MP_ACCESS_TOKEN, MP_WEBHOOK_SECRET, AVWX_TOKEN, OWM_API_KEY and UPLOAD_DIR.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 1.5,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-006"
+      ],
+      "acceptanceCriteria": [
+        "docker compose up starts PostgreSQL 10.x and SELECT version() reports 10.x",
+        ".env.example lists every variable the backend reads"
+      ]
+    },
+    {
+      "id": "AV-106",
+      "title": "Threat model and data inventory",
+      "description": "STRIDE-style threat model for auth, billing webhooks, uploads, exams and admin. Data inventory with classification, minimisation decisions (store only name, email, avatar, provider id) and a retention table.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-002"
+      ],
+      "acceptanceCriteria": [
+        "The threat model lists threats with a mitigating task ID for each",
+        "The data inventory lists every personal-data column and its retention",
+        "No card data or passwords appear in the inventory"
+      ]
+    },
+    {
+      "id": "AV-175",
+      "title": "Personal data breach response procedure (confirm with legal counsel)",
+      "description": "Written procedure: detection, containment, assessment, notification to the Chilean data protection agency and affected users within the legal deadline under Ley 21.719, and a register of incidents.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 3,
+      "phase": "Phase 0: Inception, Decisions and Repository Setup",
+      "dependsOn": [
+        "AV-105",
+        "AV-106"
+      ],
+      "acceptanceCriteria": [
+        "Procedure document approved by legal counsel",
+        "Incident register template exists",
+        "Contacts and notification templates prepared"
+      ]
+    },
+    {
+      "id": "AV-010",
+      "title": "Express 5 application skeleton",
+      "description": "backend/src/app.js and server.js: helmet, cors with allowlist from CORS_ORIGINS, JSON body limit, GET /api/v1/health, 404 handler and central error handler. Pure-JavaScript dependencies only.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-006"
+      ],
+      "acceptanceCriteria": [
+        "GET /api/v1/health returns 200 with {status:'ok'}",
+        "A request from an origin outside the allowlist receives no CORS headers",
+        "helmet security headers are present on responses",
+        "npm ls shows no native (node-gyp) modules"
+      ]
+    },
+    {
+      "id": "AV-011",
+      "title": "Environment configuration loader",
+      "description": "dotenv-based config module that validates required variables at startup and fails fast with a clear message.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 1,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-010"
+      ],
+      "acceptanceCriteria": [
+        "Starting without JWT_SECRET or DATABASE_URL exits with a descriptive error",
+        "Config is read from one module only (no process.env scattered in code)"
+      ]
+    },
+    {
+      "id": "AV-116",
+      "title": "Secrets management and transport security",
+      "description": "All secrets only in cPanel environment variables or .env (never committed). Fail fast when any is missing. HTTPS redirect, HSTS, secure cookie flags in production, and a secret-scanning pre-commit hook (e.g. gitleaks via CI).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-011"
+      ],
+      "acceptanceCriteria": [
+        "The app refuses to start in production without HTTPS-related config",
+        "Secret scanning runs in CI and fails on a planted test secret"
+      ]
+    },
+    {
+      "id": "AV-012",
+      "title": "PostgreSQL pool and transaction helper",
+      "description": "pg Pool (small max for shared hosting), query helper, withTx(fn) helper (BEGIN/COMMIT/ROLLBACK with one client), app-generated UUID helper (crypto.randomUUID).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-011",
+        "AV-007"
+      ],
+      "acceptanceCriteria": [
+        "withTx rolls back when the callback throws (covered by a test)",
+        "Pool size is configurable via env",
+        "All queries use parameter placeholders ($1, $2...)"
+      ]
+    },
+    {
+      "id": "AV-013",
+      "title": "Boot-time migration runner",
+      "description": "Applies backend/migrations/NNN_*.sql in numeric order on boot, one transaction per file, records version + SHA-256 checksum in schema_migrations, guarded by pg_advisory_lock so concurrent Passenger workers cannot run migrations twice; checksum mismatch of an applied file aborts boot.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-012"
+      ],
+      "acceptanceCriteria": [
+        "Fresh DB: all migrations apply and are listed in schema_migrations",
+        "Second boot applies nothing and starts normally",
+        "Two processes started at once apply each migration exactly once",
+        "Editing an applied migration file makes boot fail with a checksum error"
+      ]
+    },
+    {
+      "id": "AV-014",
+      "title": "Migration 001: core schema (PG 10)",
+      "description": "Create app_user (no password column), oauth_identity, user_session, audit_log, stored_file, legal_acceptance and the 10 domain tables exactly as in DATABASE_SCHEMA.md, plus indexes. Use only PG10-compatible, idempotent SQL (IF NOT EXISTS, CHECK constraints, FK creation order).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-013"
+      ],
+      "acceptanceCriteria": [
+        "Migration runs cleanly on postgres:10",
+        "Re-running the SQL file manually causes no error",
+        "No PG11+ syntax (generated columns, CREATE PROCEDURE, MERGE, EXECUTE FUNCTION, gen_random_uuid)"
+      ]
+    },
+    {
+      "id": "AV-015",
+      "title": "Migration 002: seed catalogs",
+      "description": "Idempotent seed of aircraft_manufacturer, aircraft_model (C172, C182, PA-28, SR22, DA40...) and default checklist_template rows with fixed UUID literals and ON CONFLICT DO NOTHING. Model figures sourced from POH data.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-014"
+      ],
+      "acceptanceCriteria": [
+        "Seed applies twice without duplicates",
+        "At least 6 manufacturers and 6 models with cruise speed, fuel and weight data",
+        "Each seeded model figure lists its source in a SQL comment"
+      ]
+    },
+    {
+      "id": "AV-110",
+      "title": "Session tokens, cookies and revocation",
+      "description": "JWT (jsonwebtoken) signed with JWT_SECRET, short expiry with sliding refresh, delivered only as an httpOnly Secure SameSite=Lax cookie. Each token's jti is stored in user_session for logout, revoke-all and account-deletion invalidation. Express trust proxy is set for Passenger.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-014",
+        "AV-011"
+      ],
+      "acceptanceCriteria": [
+        "Tokens are never exposed to JavaScript or in URLs",
+        "A revoked jti is rejected on the next request",
+        "Revoke-all-sessions works (test)"
+      ]
+    },
+    {
+      "id": "AV-016",
+      "title": "Google OAuth login with JWT session cookie",
+      "description": "Google sign-in (OIDC) with passport + passport-google-oauth20 (session: false), state/nonce kept in a short-lived signed cookie. First login creates app_user (role student) and oauth_identity. Issue a short-lived JWT in an httpOnly Secure SameSite=Lax cookie, with its jti stored in user_session so it can be revoked. GET /api/v1/auth/me and POST /api/v1/auth/logout. No local passwords.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-014",
+        "AV-110"
+      ],
+      "acceptanceCriteria": [
+        "A new Google user can sign up and log in, and gets the student role",
+        "The session cookie is httpOnly, Secure and SameSite=Lax; no token is readable from JavaScript",
+        "Logout or revocation invalidates the session server-side (jti check)",
+        "The OAuth state parameter is validated; a tampered callback returns 400",
+        "No password is stored anywhere"
+      ]
+    },
+    {
+      "id": "AV-115",
+      "title": "Facebook login and account linking",
+      "description": "passport-facebook strategy. Link a new provider to an existing account only when both emails are verified (Google email_verified; Facebook accounts without a returned email are treated as unverified). A logged-in user can link or unlink providers, but cannot remove the last one.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-016"
+      ],
+      "acceptanceCriteria": [
+        "A Facebook user can sign up and log in",
+        "The same verified email via Google and Facebook resolves to one account",
+        "An unverified or missing email never auto-links; the user is asked to sign in with the existing provider first",
+        "The last provider cannot be unlinked"
+      ]
+    },
+    {
+      "id": "AV-114",
+      "title": "Audit log",
+      "description": "audit_log writer used for sign-in, sign-out, role changes, account deletion/export, subscription changes, content publish/unpublish and file deletion. Stores actor, action, target, IP hash and timestamp, with no sensitive payloads.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-014"
+      ],
+      "acceptanceCriteria": [
+        "Each listed action produces exactly one audit row (tests)",
+        "Rows contain no tokens or card data",
+        "Admins can query the log by user and date"
+      ]
+    },
+    {
+      "id": "AV-017",
+      "title": "Admin role bootstrap script",
+      "description": "npm run make-admin <email> CLI that promotes an existing user to admin and writes an audit_log entry. There is no public way to become an admin.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 1.5,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-016",
+        "AV-114"
+      ],
+      "acceptanceCriteria": [
+        "The script promotes an existing user and logs the change in audit_log",
+        "An unknown email fails without changing any data"
+      ]
+    },
+    {
+      "id": "AV-111",
+      "title": "CSRF protection",
+      "description": "Double-submit CSRF token (signed cookie + X-CSRF-Token header) required on all state-changing routes, plus an Origin/Referer check. The Mercado Pago webhook route is excluded and protected by signature instead.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-110"
+      ],
+      "acceptanceCriteria": [
+        "POST/PUT/PATCH/DELETE without a valid token return 403",
+        "A cross-origin form post is rejected (test)",
+        "The webhook route still accepts signed provider events"
+      ]
+    },
+    {
+      "id": "AV-112",
+      "title": "Role-based access control (admin vs student)",
+      "description": "requireRole middleware and role checks for admin endpoints (content, question bank, billing admin). Role changes are audited.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-016"
+      ],
+      "acceptanceCriteria": [
+        "Students get 403 on every /api/v1/admin/* route (test)",
+        "Role changes create audit_log entries"
+      ]
+    },
+    {
+      "id": "AV-113",
+      "title": "Rate limiting and request limits",
+      "description": "express-rate-limit (pure JS, in-memory store sized for one host) on auth, uploads, exam submission and webhooks. JSON body size limits and request timeouts.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-010"
+      ],
+      "acceptanceCriteria": [
+        "Exceeding a limit returns 429 with Retry-After",
+        "Limits are configurable via env"
+      ]
+    },
+    {
+      "id": "AV-018",
+      "title": "API conventions: validation, errors, pagination, locking",
+      "description": "Request validation helper, uniform error JSON {error:{code,message,details}}, pagination params, 409 Conflict on optimistic-lock version mismatch, soft-delete helpers, and a user_id scoping helper that every repository must use.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-010"
+      ],
+      "acceptanceCriteria": [
+        "Invalid payloads return 400 with field details",
+        "Stale version update returns 409",
+        "Documented in backend/README.md"
+      ]
+    },
+    {
+      "id": "AV-043",
+      "title": "Secure file upload service",
+      "description": "Shared upload service: pure-JS multipart (busboy/multer), MIME sniffing plus an extension allowlist (PDF, PNG, JPEG, WebP), size limits per purpose, random file names stored outside the public web root, a stored_file row with owner and SHA-256, and an authenticated, owner-checked download endpoint. Used by checklists, lesson assets, licence scans, aircraft photos and maintenance documents.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-018",
+        "AV-014",
+        "AV-114"
+      ],
+      "acceptanceCriteria": [
+        "Files over the limit, or with a disallowed type or a spoofed extension, are rejected",
+        "Files cannot be downloaded without authentication or by another user (except published lesson assets)",
+        "The upload directory is outside the web root and excluded from git",
+        "Upload and delete actions are written to audit_log"
+      ]
+    },
+    {
+      "id": "AV-163",
+      "title": "Logging and monitoring without personal data",
+      "description": "Structured logs with request id and no tokens, emails or IPs in clear text. Error alerting (email or uptime monitor) and log rotation within the hosting limits.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-010"
+      ],
+      "acceptanceCriteria": [
+        "A log review finds no secrets or personal data",
+        "A forced 500 triggers an alert"
+      ]
+    },
+    {
+      "id": "AV-019",
+      "title": "Backend test harness",
+      "description": "node:test (or another pure-JS runner) + supertest against a disposable PostgreSQL 10 test database; migrations run before tests; npm test script.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 1: Backend Foundation, Identity and Security Baseline",
+      "dependsOn": [
+        "AV-013"
+      ],
+      "acceptanceCriteria": [
+        "npm test runs green locally against postgres:10",
+        "Tests isolate data (truncate or transaction rollback between tests)"
+      ]
+    },
+    {
+      "id": "AV-020",
+      "title": "Vite + React scaffold",
+      "description": "frontend/ created with Vite React template, ESLint/Prettier, VITE_API_URL, dev proxy to the backend.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-006"
+      ],
+      "acceptanceCriteria": [
+        "npm run dev serves the app and proxies /api to the backend",
+        "npm run build produces a dist/ folder without warnings"
+      ]
+    },
+    {
+      "id": "AV-021",
+      "title": "Routing and responsive layout shell",
+      "description": "react-router routes, AppBar with logo, collapsible side navigation, breakpoints compact <600px / medium 600-840px / expanded >840px.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-020"
+      ],
+      "acceptanceCriteria": [
+        "Navigation works on 375px, 768px and 1280px widths with no horizontal scroll",
+        "Unknown routes show a not-found page"
+      ]
+    },
+    {
+      "id": "AV-022",
+      "title": "Theme system (light/dark/auto + aviation colours)",
+      "description": "CSS variable tokens from the ROADMAP palette (or the palette chosen in AV-002), VFR/MVFR/IFR/LIFR colours, ThemeProvider, auto mode via prefers-color-scheme. Replaces the prototype toggleTheme().",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-021",
+        "AV-002"
+      ],
+      "acceptanceCriteria": [
+        "Switching theme updates all components without reload",
+        "Auto mode follows the OS setting",
+        "No hard-coded colours in components (lint or review check)"
+      ]
+    },
+    {
+      "id": "AV-023",
+      "title": "Internationalisation es/en/pt",
+      "description": "i18next + react-i18next, JSON resources, browser language detection, manual selector; Spanish default.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-020"
+      ],
+      "acceptanceCriteria": [
+        "All shell texts come from translation files",
+        "Changing language updates the UI immediately",
+        "Missing keys are reported in development"
+      ]
+    },
+    {
+      "id": "AV-024",
+      "title": "Social login UI, auth context and API client",
+      "description": "Login/sign-up page with Google and Facebook buttons. API client sends cookies (credentials: 'include') and the CSRF header. AuthContext loads /auth/me, ProtectedRoute and role-aware routes, automatic logout on 401.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-016",
+        "AV-115",
+        "AV-021"
+      ],
+      "acceptanceCriteria": [
+        "Unauthenticated users are redirected to /login",
+        "After sign-in, the user lands on the dashboard (new users go through terms acceptance)",
+        "An expired session redirects to login with a message",
+        "Every state-changing request sends the CSRF token"
+      ]
+    },
+    {
+      "id": "AV-025",
+      "title": "Shared UI components",
+      "description": "InfoModal (standard notification/message modal), Card, Button, Input, Select, NumberWithUnit field, Table, loading and empty states.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-022"
+      ],
+      "acceptanceCriteria": [
+        "Components support light/dark themes and keyboard focus states",
+        "InfoModal is used for all user notifications",
+        "Each component has at least one render test"
+      ]
+    },
+    {
+      "id": "AV-026",
+      "title": "UtcClock component",
+      "description": "Dual clock: UTC 'HH:MM:SS Z' and local time with offset (e.g. '20:45:30 -03:00'), updated every second.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-025"
+      ],
+      "acceptanceCriteria": [
+        "Shows correct UTC and local time with offset",
+        "Updates every second without layout shift",
+        "Unit test covers formatting with a fixed date"
+      ]
+    },
+    {
+      "id": "AV-027",
+      "title": "Module registry and feature toggles",
+      "description": "moduleRegistry with id, icon, isCore, dependsOn and lazy route loading; navigation shows only enabled modules; dependency validation (flight_planning needs aircraft+logbook, maintenance needs aircraft, reports needs logbook+aircraft).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-021"
+      ],
+      "acceptanceCriteria": [
+        "Disabling a module hides its navigation and routes",
+        "A module cannot be disabled while an enabled module depends on it",
+        "Settings module cannot be disabled"
+      ]
+    },
+    {
+      "id": "AV-028",
+      "title": "Frontend test setup",
+      "description": "Vitest + Testing Library + jsdom; npm test script.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-020"
+      ],
+      "acceptanceCriteria": [
+        "npm test runs and passes in frontend/"
+      ]
+    },
+    {
+      "id": "AV-117",
+      "title": "CI pipeline with tests and dependency scanning",
+      "description": "GitHub Actions: lint, backend tests against a postgres:10 service, frontend tests, npm audit, Dependabot, secret scanning, and a check that no native modules are installed.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-019",
+        "AV-028"
+      ],
+      "acceptanceCriteria": [
+        "Pull requests run the pipeline and block on failure",
+        "Dependabot is enabled for both packages",
+        "A native-module check fails the build if node-gyp is used"
+      ]
+    },
+    {
+      "id": "AV-118",
+      "title": "Public landing, pricing and sign-up pages",
+      "description": "Public pages: product landing for PPL students, pricing (from AV-102), sign-up CTA (social buttons), and links to terms, privacy and cookie notice. SEO basics.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-022",
+        "AV-023"
+      ],
+      "acceptanceCriteria": [
+        "Pages work without login and at all breakpoints",
+        "Pricing reflects the plan matrix",
+        "Legal links are present in the footer"
+      ]
+    },
+    {
+      "id": "AV-119",
+      "title": "Admin area shell",
+      "description": "Role-gated /admin layout with navigation for content, question bank, users and subscriptions.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-024",
+        "AV-112"
+      ],
+      "acceptanceCriteria": [
+        "Students cannot reach /admin routes (client and server enforced)",
+        "Admin navigation lists all admin sections"
+      ]
+    },
+    {
+      "id": "AV-162",
+      "title": "Legal pages and consent versioning",
+      "description": "Publish the Terms, Privacy and cookie notice pages from versioned documents. legal_acceptance stores user, document, version and time. Cookie notice for strictly necessary cookies only (no tracking unless decided).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-105",
+        "AV-014"
+      ],
+      "acceptanceCriteria": [
+        "A version bump forces re-acceptance on next login",
+        "Pages are reachable without login"
+      ]
+    },
+    {
+      "id": "AV-176",
+      "title": "Consent records",
+      "description": "Store explicit consent per purpose (terms/privacy acceptance, optional marketing email, optional analytics cookies if any) with version and timestamp, and allow withdrawal from account settings.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-162"
+      ],
+      "acceptanceCriteria": [
+        "Optional consents default to off and can be withdrawn",
+        "Every change is stored with version and time"
+      ]
+    },
+    {
+      "id": "AV-088",
+      "title": "Legal disclaimer and terms acceptance",
+      "description": "Aviation disclaimer text (es/en/pt) shown on calculators, the planner, exams and exports. The current Terms and Privacy versions must be accepted on first login and again after each version change (legal_acceptance).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-024",
+        "AV-162"
+      ],
+      "acceptanceCriteria": [
+        "The user must accept the current terms version before using the app",
+        "Accepting a new version is recorded with a timestamp",
+        "The disclaimer appears on every PDF export"
+      ]
+    },
+    {
+      "id": "AV-029",
+      "title": "Walking-skeleton deployment to cPanel",
+      "description": "Deploy the backend through Setup Node.js App (Passenger) with env vars, trust proxy enabled and HTTPS enforced. Run migrations against the hosted PostgreSQL 10.23, serve the Vite build and sign in with Google on the real domain. This de-risks hosting early.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 2: Frontend Foundation, Public Pages and Walking Skeleton",
+      "dependsOn": [
+        "AV-001",
+        "AV-024",
+        "AV-013"
+      ],
+      "acceptanceCriteria": [
+        "The production URL serves the login page over HTTPS with HSTS",
+        "Google sign-in works on the production domain",
+        "schema_migrations on the host lists all applied migrations",
+        "Deployment steps are written in docs/DEPLOYMENT.md"
+      ]
+    },
+    {
+      "id": "AV-182",
+      "title": "Public free-tools hub shell",
+      "description": "No-login public area /tools with a hub page and one route per tool (flight calculator, unit converter, METAR/TAF, airspeed). Mobile-first, fast (code-split per tool), shareable URLs that encode inputs in query params, and a soft, non-blocking subscription CTA on every tool.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 3: Free Public Tools Hub (Acquisition Channel) and First Production Release",
+      "dependsOn": [
+        "AV-021",
+        "AV-022",
+        "AV-023",
+        "AV-118"
+      ],
+      "acceptanceCriteria": [
+        "Opening a shared URL restores the exact inputs and result",
+        "Each tool page shows a soft CTA linking to pricing, without blocking use",
+        "Tool pages load without any authenticated API call"
+      ]
+    },
+    {
+      "id": "AV-030",
+      "title": "Port unit converter as a free public tool (prototype: conversion.html)",
+      "description": "Move the conversion factors into a pure JS units library with tests, and build a modern, fast, mobile-first React converter (no login). Existing categories: distance, speed, weight, volume, temperature, pressure, time. Add the roadmap units missing from the prototype (ft/s, sm, nm, USG/Qt/lQt, bar, angles deg/rad, decimal<->clock time).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 3: Free Public Tools Hub (Acquisition Channel) and First Production Release",
+      "dependsOn": [
+        "AV-025",
+        "AV-028"
+      ],
+      "acceptanceCriteria": [
+        "Every prototype conversion gives the same result in the new UI",
+        "Unit tests cover each category including temperature offsets",
+        "Roadmap unit list is fully covered"
+      ]
+    },
+    {
+      "id": "AV-031",
+      "title": "Port flight calculator as a free public tool (prototype: flightcal.html + script.js)",
+      "description": "Extract the takeoff distance, rate of climb, landing distance, climb, TAS/GS and level-flight calculations into pure functions with tests. Build a modern, fast, mobile-first React UI (no login) with Chart.js charts. Document the source of the embedded performance tables (C172-type POH).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 10,
+      "phase": "Phase 3: Free Public Tools Hub (Acquisition Channel) and First Production Release",
+      "dependsOn": [
+        "AV-025",
+        "AV-028"
+      ],
+      "acceptanceCriteria": [
+        "Results match the prototype for at least 10 reference inputs",
+        "Interpolation edge cases (outside table range) show a clear warning",
+        "Charts render in light and dark themes",
+        "Legal disclaimer is visible on the page"
+      ]
+    },
+    {
+      "id": "AV-180",
+      "title": "Airspeed calculation library (IAS -> CAS -> EAS -> TAS -> GS)",
+      "description": "Pure JS ISA-based functions: pressure altitude from elevation and QNH, density altitude from OAT; IAS->CAS via a user-entered or per-aircraft calibration/position-error table; CAS->EAS with the compressibility correction; EAS->TAS via the density ratio; TAS->GS using the head/tailwind component from wind direction and speed versus course. Formulas and sources documented.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 3: Free Public Tools Hub (Acquisition Channel) and First Production Release",
+      "dependsOn": [
+        "AV-028"
+      ],
+      "acceptanceCriteria": [
+        "Results match published reference examples (FAA/ICAO ISA tables, E6B) within rounding for 15 cases",
+        "Compressibility correction is negligible at low speeds and correct at higher CAS/altitudes (tests)",
+        "Invalid inputs (e.g. OAT below absolute zero) are rejected with messages"
+      ]
+    },
+    {
+      "id": "AV-181",
+      "title": "Airspeed calculator UI (free public tool)",
+      "description": "Mobile-first form with a step-by-step result chain (IAS, CAS, EAS, TAS, GS, plus pressure and density altitude), unit switching, and an explanation of each step.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 3: Free Public Tools Hub (Acquisition Channel) and First Production Release",
+      "dependsOn": [
+        "AV-180",
+        "AV-182"
+      ],
+      "acceptanceCriteria": [
+        "Every intermediate value is shown with units",
+        "Results update instantly as inputs change",
+        "Works without login and at 375px width"
+      ]
+    },
+    {
+      "id": "AV-032",
+      "title": "Public weather proxy with caching and per-IP rate limiting",
+      "description": "Public (no login) GET /api/v1/weather/metar/:icao, /taf/:icao, /station/:icao and /metar/:icao/history. They proxy the weather API with the key kept server-side (the leaked key in js/config.js is revoked in AV-003), validate ICAO codes, use an in-memory TTL cache and a per-IP rate limit, and include abuse protection.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 3: Free Public Tools Hub (Acquisition Channel) and First Production Release",
+      "dependsOn": [
+        "AV-010",
+        "AV-004",
+        "AV-113"
+      ],
+      "acceptanceCriteria": [
+        "The browser never receives the weather API key",
+        "Invalid ICAO codes return 400",
+        "Repeated requests within the TTL are served from cache",
+        "Exceeding the per-IP limit returns 429",
+        "Upstream failure returns 502 with a friendly message"
+      ]
+    },
+    {
+      "id": "AV-033",
+      "title": "METAR/TAF decoder as a free public tool (port and improve js/weather-decoder.js + js/weather-api.js)",
+      "description": "Port and improve the existing decodeMetar (js/weather-decoder.js) and the fetch logic fetchMetar, fetchMetarHistory and analyzeMetarTrends (js/weather-api.js) instead of rewriting from zero. Move the decoding into a tested pure module with a TAF decoder. Add ICAO search with suggestions, a plain-language decoded view, flight category (VFR/MVFR/IFR/LIFR), trends chart, and recent/favourite stations in localStorage (synced per user when logged in).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 3: Free Public Tools Hub (Acquisition Channel) and First Production Release",
+      "dependsOn": [
+        "AV-032",
+        "AV-182"
+      ],
+      "acceptanceCriteria": [
+        "Decoded output is at least as complete as the prototype for a sample corpus of METAR/TAF strings (tests)",
+        "Works without login and at 375px width",
+        "Flight category colour is displayed",
+        "All weather requests go through the backend proxy"
+      ]
+    },
+    {
+      "id": "AV-183",
+      "title": "SEO: prerendering, meta/OG tags and sitemap for public pages",
+      "description": "Build-time static generation of the public routes (landing, pricing, tools hub, each tool) with a pure-JS approach (react-dom/server renderToString or a Vite SSG plugin; no headless browser), then hydrate on the client. Per-page title, description, canonical, Open Graph/Twitter tags, JSON-LD (WebApplication), sitemap.xml and robots.txt (private areas disallowed).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 3: Free Public Tools Hub (Acquisition Channel) and First Production Release",
+      "dependsOn": [
+        "AV-182",
+        "AV-030",
+        "AV-031",
+        "AV-181",
+        "AV-033"
+      ],
+      "acceptanceCriteria": [
+        "View-source of each public tool page contains its full content and meta tags",
+        "sitemap.xml lists all public pages; robots.txt blocks /app and /admin",
+        "Lighthouse mobile scores are SEO >= 95 and Performance >= 90 on the tool pages"
+      ]
+    },
+    {
+      "id": "AV-185",
+      "title": "Ship free tools to production (before the paid area)",
+      "description": "Release the public tools hub to production. Add 301 redirects from legacy URLs (flightcal.html, conversion.html, meteorologia.html, navegacion.html) to the new tool routes to keep existing traffic and rankings. Submit the sitemap to Google Search Console.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 3: Free Public Tools Hub (Acquisition Channel) and First Production Release",
+      "dependsOn": [
+        "AV-183",
+        "AV-029",
+        "AV-003"
+      ],
+      "acceptanceCriteria": [
+        "Legacy URLs return 301 to the matching new route",
+        "Search Console accepts the sitemap",
+        "The paid area stays behind login/entitlements (or hidden) while unfinished"
+      ]
+    },
+    {
+      "id": "AV-120",
+      "title": "Billing schema migration",
+      "description": "Migration for billing_plan (amount as an integer in minor units + currency; CLP has zero decimals; seed one plan: 5000 CLP/month; trial_days nullable for an optional trial), billing_customer, subscription (provider, provider_subscription_id, status) and billing_event (provider + provider_event_id UNIQUE for idempotency). Statuses are trialing, active, past_due, canceled and incomplete. No card data columns.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 4: Billing and Subscriptions",
+      "dependsOn": [
+        "AV-014"
+      ],
+      "acceptanceCriteria": [
+        "Migration runs on postgres:10 and is idempotent",
+        "billing_event.provider_event_id is unique",
+        "The schema has no column that could hold PAN/CVV"
+      ]
+    },
+    {
+      "id": "AV-121",
+      "title": "Provider-agnostic billing module + Mercado Pago adapter",
+      "description": "BillingProvider interface (createCheckout, cancel/manage, verifyNotification, fetchSubscription, mapStatus) with a Mercado Pago adapter: create a preapproval and redirect to its hosted init_point. Card data stays at Mercado Pago (PCI SAQ-A). Map preapproval statuses (pending, authorized, paused, cancelled) and authorized payment results to trialing/active/past_due/canceled/incomplete. Use the official `mercadopago` SDK only if it is pure JS, else plain HTTPS. Stripe and Flow.cl remain possible future adapters.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 4: Billing and Subscriptions",
+      "dependsOn": [
+        "AV-120",
+        "AV-103"
+      ],
+      "acceptanceCriteria": [
+        "Subscription checkout happens on the Mercado Pago hosted page; no card form is served by our domain",
+        "A future adapter would need no change outside the billing module",
+        "Unit tests cover the preapproval status mapping",
+        "CLP amounts are handled as integers"
+      ]
+    },
+    {
+      "id": "AV-122",
+      "title": "Mercado Pago webhook endpoint with signature check and idempotency",
+      "description": "POST /api/v1/billing/webhook: validate the x-signature header (HMAC with the webhook secret over the documented manifest: data.id, x-request-id, ts) and reject stale timestamps. Re-fetch the preapproval or payment from the Mercado Pago API before trusting it. Insert into billing_event with ON CONFLICT DO NOTHING, then update the subscription status in a transaction. Handle out-of-order events; audit every status change.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 4: Billing and Subscriptions",
+      "dependsOn": [
+        "AV-121",
+        "AV-114"
+      ],
+      "acceptanceCriteria": [
+        "Invalid or missing signature returns 400/401 and changes nothing",
+        "Replaying the same notification twice changes state only once (test)",
+        "Preapproval authorized/paused/cancelled and failed recurring payments update the status correctly"
+      ]
+    },
+    {
+      "id": "AV-123",
+      "title": "Entitlement middleware and feature gating",
+      "description": "requireEntitlement(feature) middleware and a /api/v1/me/entitlements endpoint built from plan + subscription status (active/trialing = paid; past_due = grace period; canceled = free after period end). Matrix: the free public tools (flight calculator, unit converter, METAR/TAF decoder, airspeed calculator) need no login; everything else (education, exams, logbook, flights, aircraft, charts/weather map, planning/estimates, checklists, reports) requires an active subscription. Frontend hook useEntitlement hides or locks paid UI.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 4: Billing and Subscriptions",
+      "dependsOn": [
+        "AV-120",
+        "AV-112",
+        "AV-102"
+      ],
+      "acceptanceCriteria": [
+        "Paid endpoints return 402/403 with an upgrade hint for non-subscribers",
+        "Public tool endpoints work without login",
+        "Admins bypass gating",
+        "Gating rules come from one config that matches the locked matrix"
+      ]
+    },
+    {
+      "id": "AV-124",
+      "title": "Subscription UI",
+      "description": "Upgrade flow to the Mercado Pago hosted checkout, return pages, and an account billing page with plan, status, next charge date and a cancel action (API cancel of the preapproval). Banners for trial end and past_due. Prices are shown in CLP.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 4: Billing and Subscriptions",
+      "dependsOn": [
+        "AV-121",
+        "AV-123",
+        "AV-118"
+      ],
+      "acceptanceCriteria": [
+        "A test-mode card completes checkout and unlocks paid features after the webhook",
+        "Canceling in the portal shows 'ends on <date>'",
+        "past_due shows a payment-update banner"
+      ]
+    },
+    {
+      "id": "AV-125",
+      "title": "Trial, grace period and cancellation rules",
+      "description": "Optional trial driven by billing_plan.trial_days (null = no trial) mapped to the preapproval free_trial setting, first subscription only (one per user). Past_due grace days after failed recurring payments, access until the end of the paid period after cancel, and reactivation through a new preapproval.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 4: Billing and Subscriptions",
+      "dependsOn": [
+        "AV-122",
+        "AV-123"
+      ],
+      "acceptanceCriteria": [
+        "A user cannot start a second trial",
+        "Access ends exactly at period end after cancellation (test with clock)"
+      ]
+    },
+    {
+      "id": "AV-126",
+      "title": "Admin subscriptions view and reconciliation",
+      "description": "Admin list of subscriptions and statuses plus a reconciliation command that compares local subscriptions with Mercado Pago preapprovals and reports mismatches.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 4: Billing and Subscriptions",
+      "dependsOn": [
+        "AV-122",
+        "AV-119"
+      ],
+      "acceptanceCriteria": [
+        "Reconciliation reports drift without changing data unless run with --fix",
+        "The admin view shows no payment-method details"
+      ]
+    },
+    {
+      "id": "AV-127",
+      "title": "Billing end-to-end test plan (test mode)",
+      "description": "Scripted scenarios with Mercado Pago sandbox test users and test cards: new subscription, failed recurring payment, recovery, cancel. Webhooks are delivered to a tunnel or staging URL. Includes a PCI SAQ-A self-check (no card data reaches our servers).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 4: Billing and Subscriptions",
+      "dependsOn": [
+        "AV-122",
+        "AV-124"
+      ],
+      "acceptanceCriteria": [
+        "All scenarios pass in test mode",
+        "The SAQ-A checklist is completed and stored"
+      ]
+    },
+    {
+      "id": "AV-130",
+      "title": "Education schema migration",
+      "description": "Migration for subject, course_module, lesson, lesson_asset and lesson_progress, with ordering, draft/published status, an is_free flag for gating and per-user progress.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-014",
+        "AV-043"
+      ],
+      "acceptanceCriteria": [
+        "Migration runs on postgres:10 and is idempotent",
+        "Progress is unique per (user, lesson)"
+      ]
+    },
+    {
+      "id": "AV-170",
+      "title": "Authority and regulation reference model",
+      "description": "Tables authority (code e.g. DGAC-CL, country, name) and regulation_reference (authority, code e.g. 'DAN 61', section e.g. '61.105', version, effective_date, status current/superseded), plus link tables to subjects, lessons and questions. Admin API and UI to manage references and tag content. Prepared for future authorities (Ecuador RDAC, Bolivia RAB, Peru RAP).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-130"
+      ],
+      "acceptanceCriteria": [
+        "Subjects, lessons and questions can be tagged with one or more regulation references",
+        "Content can be filtered by authority and norm version",
+        "Adding a new authority needs only data, no code change"
+      ]
+    },
+    {
+      "id": "AV-131",
+      "title": "Content admin API",
+      "description": "Admin CRUD for subjects, modules and lessons with ordering, draft/publish (publishing creates a version, see AV-172) and soft delete. Publishing is audited. The student read API returns the latest published version only, gated by entitlement except is_free items.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-130",
+        "AV-112",
+        "AV-114"
+      ],
+      "acceptanceCriteria": [
+        "Students never receive draft content",
+        "Paid lessons return 403 for free users; free lessons are open",
+        "Reordering persists"
+      ]
+    },
+    {
+      "id": "AV-172",
+      "title": "Content versioning for lessons and questions",
+      "description": "Each publish of a lesson or question stores an immutable revision (author, timestamp, change note, regulation references). Students see the latest published revision; exam attempts keep the snapshot. Admins can compare and restore revisions.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-131"
+      ],
+      "acceptanceCriteria": [
+        "Publishing creates a new revision without altering earlier ones",
+        "Restore creates a new draft from an old revision",
+        "Exam history still shows the question text that was asked"
+      ]
+    },
+    {
+      "id": "AV-132",
+      "title": "Rich text sanitisation",
+      "description": "Lesson body stored as HTML sanitised server-side with sanitize-html (pure JS) using a strict allowlist. Video embeds only from allowlisted hosts (YouTube/Vimeo) via iframe src validation.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-131"
+      ],
+      "acceptanceCriteria": [
+        "Script tags, event handlers and javascript: URLs are stripped (tests)",
+        "Non-allowlisted iframe hosts are removed"
+      ]
+    },
+    {
+      "id": "AV-133",
+      "title": "Lesson assets (images, PDFs, video links)",
+      "description": "Attach uploaded images/PDFs and external video links to lessons. Published lesson assets are readable by entitled users.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-131",
+        "AV-043"
+      ],
+      "acceptanceCriteria": [
+        "An admin can attach and remove assets",
+        "A student without entitlement cannot download paid lesson PDFs"
+      ]
+    },
+    {
+      "id": "AV-134",
+      "title": "Admin content editor UI",
+      "description": "Solid authoring tool for the owner: WYSIWYG rich text editor (e.g. TipTap, pure JS) with headings, tables, images and callouts; drag-and-drop image/PDF upload; video link embed; regulation reference tagging; preview; draft/publish; version history with diff and restore; autosave and reordering.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 10,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-119",
+        "AV-131",
+        "AV-132",
+        "AV-133"
+      ],
+      "acceptanceCriteria": [
+        "An admin can author and publish a full lesson with image, PDF and video",
+        "The preview matches the student view",
+        "Unsaved-changes warning on navigation"
+      ]
+    },
+    {
+      "id": "AV-135",
+      "title": "Student course catalogue and lesson viewer",
+      "description": "Catalogue by subject -> modules -> lessons with lock icons for paid content. Lesson viewer with images, in-browser PDF viewing, video embed, previous/next navigation, and mobile friendly.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-131",
+        "AV-123",
+        "AV-025"
+      ],
+      "acceptanceCriteria": [
+        "Locked lessons show an upgrade prompt",
+        "The lesson viewer works at 375px width",
+        "PDFs open without a separate download"
+      ]
+    },
+    {
+      "id": "AV-136",
+      "title": "Progress tracking",
+      "description": "Mark lessons complete (manual + on reaching the end), percentage per module and subject, and 'continue where you left off' on the dashboard.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-135"
+      ],
+      "acceptanceCriteria": [
+        "Progress percentages match completed lessons (test)",
+        "Resume opens the last viewed lesson"
+      ]
+    },
+    {
+      "id": "AV-137",
+      "title": "Seed DGAC Chile PPL subjects",
+      "description": "Idempotent seed of the DGAC Chile authority, its DAN/DAR references (e.g. DAN 61) and the PPL ground-school subjects from AV-100, tagged with authority and regulation_reference.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-130",
+        "AV-100",
+        "AV-170"
+      ],
+      "acceptanceCriteria": [
+        "Subjects match the DGAC Chile syllabus recorded in AV-100",
+        "Each subject is linked to its regulation references",
+        "The seed is re-runnable without duplicates"
+      ]
+    },
+    {
+      "id": "AV-036",
+      "title": "Migrate prototype educational content into courses (prototypes: procedimientos.html, meteorologia.html, navegacion.html)",
+      "description": "Move the existing static content (emergency procedures, ATC phraseology, SOPs, meteorology, chart reading) into Education lessons under the right subjects, using the admin editor.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-134",
+        "AV-137"
+      ],
+      "acceptanceCriteria": [
+        "All prototype content exists as published lessons under the correct subjects",
+        "Images are uploaded through the secure upload service",
+        "Legacy pages can be retired after this task"
+      ]
+    },
+    {
+      "id": "AV-138",
+      "title": "Owner authoring: initial lessons (owner work, not dev-estimated)",
+      "description": "The owner writes and publishes the first modules of each subject in the CMS, following DAN/DAR. This is owner work and is not counted in the development estimate.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 0,
+      "phase": "Phase 5: Education Space",
+      "dependsOn": [
+        "AV-101",
+        "AV-134"
+      ],
+      "acceptanceCriteria": [
+        "At least one published module per subject before launch",
+        "Content backlog tracked per subject"
+      ]
+    },
+    {
+      "id": "AV-140",
+      "title": "Evaluation schema migration",
+      "description": "Migration for question, question_option, exam_template, exam_template_subject (weights, question counts, per-subject pass rule), exam_attempt (deadline, score, passed) and exam_attempt_item (question snapshot, chosen option, correctness, weight).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-130"
+      ],
+      "acceptanceCriteria": [
+        "Migration runs on postgres:10 and is idempotent",
+        "Attempts keep a snapshot so later question edits do not change past results"
+      ]
+    },
+    {
+      "id": "AV-141",
+      "title": "Question bank admin API and CSV/JSON import",
+      "description": "Admin CRUD for questions (multiple choice with a single correct answer at minimum, explanation, image, difficulty, weight, subject/module and regulation_reference tags). CSV and JSON import with a dry-run validation report. Draft/publish/retire with versions (AV-172).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-140",
+        "AV-112"
+      ],
+      "acceptanceCriteria": [
+        "Importing a CSV or JSON file with errors reports line-level issues and imports nothing",
+        "Dry-run mode shows what would be created or updated",
+        "Retired questions are excluded from new exams but kept for history"
+      ]
+    },
+    {
+      "id": "AV-142",
+      "title": "Question bank admin UI",
+      "description": "List, filter, edit and preview questions; CSV upload; per-subject counts.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-141",
+        "AV-119"
+      ],
+      "acceptanceCriteria": [
+        "An admin can create, edit, retire and import questions",
+        "Filters by subject, status and difficulty work together"
+      ]
+    },
+    {
+      "id": "AV-171",
+      "title": "Norm-change review workflow",
+      "description": "When a regulation_reference is superseded by a new version, every linked lesson and question is flagged review_required. The admin gets a review queue with links to the affected content and can confirm, edit or retire each item. Affected exam questions can be paused automatically.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-170",
+        "AV-172",
+        "AV-141"
+      ],
+      "acceptanceCriteria": [
+        "Superseding a reference flags all linked content (test)",
+        "The review queue lists flagged items with their norm and version",
+        "Clearing a flag is audited"
+      ]
+    },
+    {
+      "id": "AV-143",
+      "title": "Exam generation service",
+      "description": "Generate a subject quiz or a full mock exam from an exam_template: random questions per subject per weights and counts, no duplicates, option shuffling, and a snapshot stored in the attempt.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-141",
+        "AV-100"
+      ],
+      "acceptanceCriteria": [
+        "Generated exams respect counts per subject (test)",
+        "The same question never appears twice in one attempt",
+        "Generation fails clearly if the bank has too few questions"
+      ]
+    },
+    {
+      "id": "AV-144",
+      "title": "Timed attempts with server-side enforcement",
+      "description": "Start sets a server deadline. Answers autosave. Submit or automatic submit happens at expiry, and late answers are rejected. Correct answers are never sent to the client before submission. One active attempt per template per user.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-143"
+      ],
+      "acceptanceCriteria": [
+        "Answers sent after the deadline are rejected (test)",
+        "The API never exposes correct options before submit",
+        "Reloading the page resumes the attempt with remaining time"
+      ]
+    },
+    {
+      "id": "AV-145",
+      "title": "Scoring engine with weighting and pass threshold",
+      "description": "Weighted score per question and per subject (ponderación), overall pass threshold plus optional per-subject minimums, as pure functions with unit tests.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-143"
+      ],
+      "acceptanceCriteria": [
+        "Scores match hand-calculated examples for 10 cases",
+        "Per-subject minimum failures mark the exam failed even when the overall score passes"
+      ]
+    },
+    {
+      "id": "AV-146",
+      "title": "Exam-taking UI",
+      "description": "Exam screen: countdown timer, question navigation, flag for review, autosave indicator, submit confirmation, time-up auto submit. Mobile friendly. Paid gating for mock exams.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 10,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-144",
+        "AV-145",
+        "AV-025",
+        "AV-123"
+      ],
+      "acceptanceCriteria": [
+        "Works at 375px width",
+        "Timer survives reload",
+        "Accessible with the keyboard"
+      ]
+    },
+    {
+      "id": "AV-147",
+      "title": "Results, attempt history and performance stats",
+      "description": "Result page with score, pass/fail and review of answers with explanations (after submit). Attempt history and per-subject performance stats and trends (Chart.js).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-145",
+        "AV-146"
+      ],
+      "acceptanceCriteria": [
+        "Stats per subject match the stored attempts (test)",
+        "History lists all attempts with date, score and duration"
+      ]
+    },
+    {
+      "id": "AV-149",
+      "title": "Owner authoring: initial question bank (owner work, not dev-estimated)",
+      "description": "The owner writes and imports the initial question bank per subject (enough for the mock-exam template). This is owner work and is not counted in the development estimate.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 0,
+      "phase": "Phase 6: Evaluation (Question Bank and Exams)",
+      "dependsOn": [
+        "AV-101",
+        "AV-142"
+      ],
+      "acceptanceCriteria": [
+        "Question count per subject meets the template minimums before launch"
+      ]
+    },
+    {
+      "id": "AV-040",
+      "title": "Catalog API: manufacturers and models",
+      "description": "CRUD + search for aircraft_manufacturer and aircraft_model with soft delete and optimistic locking.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 7: Aircraft Module",
+      "dependsOn": [
+        "AV-015",
+        "AV-018"
+      ],
+      "acceptanceCriteria": [
+        "List, create, update and soft-delete work via API tests",
+        "Duplicate manufacturer name returns 409"
+      ]
+    },
+    {
+      "id": "AV-041",
+      "title": "Aircraft API (user-scoped)",
+      "description": "CRUD for aircraft scoped by user_id; registration unique per user; model parameter overrides; performance_params JSONB; hobbs/tach read-only via API (updated by flight log).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 7: Aircraft Module",
+      "dependsOn": [
+        "AV-040"
+      ],
+      "acceptanceCriteria": [
+        "A user cannot read or modify another user's aircraft (test)",
+        "Effective parameters fall back to the model when no override exists",
+        "Stale update returns 409"
+      ]
+    },
+    {
+      "id": "AV-042",
+      "title": "Aircraft logbook API (maintenance entries)",
+      "description": "CRUD for aircraft_logbook entries with next_service_hours/date and cost.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 7: Aircraft Module",
+      "dependsOn": [
+        "AV-041"
+      ],
+      "acceptanceCriteria": [
+        "Entries are listed newest first with pagination",
+        "entry_type outside the allowed values returns 400"
+      ]
+    },
+    {
+      "id": "AV-044",
+      "title": "Aircraft list, detail and form UI",
+      "description": "Aircraft list (cards), detail with parameters/documents/expiries, create/edit form with model selector and overrides, AircraftSelector component.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 7: Aircraft Module",
+      "dependsOn": [
+        "AV-041",
+        "AV-025",
+        "AV-027"
+      ],
+      "acceptanceCriteria": [
+        "User can create, edit and soft-delete an aircraft",
+        "Expiry dates show alert colours",
+        "Form validates required fields before submit"
+      ]
+    },
+    {
+      "id": "AV-045",
+      "title": "Manufacturer and model forms UI",
+      "description": "Screens to add/edit manufacturers and models (performance, fuel, weights).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 7: Aircraft Module",
+      "dependsOn": [
+        "AV-040",
+        "AV-025"
+      ],
+      "acceptanceCriteria": [
+        "New model appears in the aircraft form selector immediately"
+      ]
+    },
+    {
+      "id": "AV-046",
+      "title": "Aircraft maintenance logbook UI",
+      "description": "Maintenance history list, entry form with document upload and next service fields.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 7: Aircraft Module",
+      "dependsOn": [
+        "AV-042",
+        "AV-043",
+        "AV-044"
+      ],
+      "acceptanceCriteria": [
+        "User can add an inspection with a PDF attachment and download it later"
+      ]
+    },
+    {
+      "id": "AV-050",
+      "title": "Pilot profile API",
+      "description": "GET/PUT /api/v1/pilot (one pilot per user), licence and medical data.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 8: Personal Logbook Module",
+      "dependsOn": [
+        "AV-018"
+      ],
+      "acceptanceCriteria": [
+        "Profile is created on first save and updated afterwards",
+        "total_hours is read-only through the API"
+      ]
+    },
+    {
+      "id": "AV-051",
+      "title": "Pilot licences API",
+      "description": "CRUD for pilot_licenses including scanned document upload.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 8: Personal Logbook Module",
+      "dependsOn": [
+        "AV-050",
+        "AV-043"
+      ],
+      "acceptanceCriteria": [
+        "Licences are scoped to the user's pilot",
+        "Expiry date is optional and validated as a date"
+      ]
+    },
+    {
+      "id": "AV-052",
+      "title": "Pilot logbook API with totals",
+      "description": "CRUD for pilot_logbook with filters (date range, aircraft, airport) and totals per category (PIC, SIC, dual, night, IFR, XC, landings, approaches).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 8: Personal Logbook Module",
+      "dependsOn": [
+        "AV-050",
+        "AV-041"
+      ],
+      "acceptanceCriteria": [
+        "Totals endpoint matches the sum of entries (test)",
+        "Filters combine correctly"
+      ]
+    },
+    {
+      "id": "AV-053",
+      "title": "Pilot profile and licences UI",
+      "description": "Profile page with photo, licence/medical data and licence cards with expiry status.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 8: Personal Logbook Module",
+      "dependsOn": [
+        "AV-050",
+        "AV-051",
+        "AV-025"
+      ],
+      "acceptanceCriteria": [
+        "User can maintain profile and licences end to end",
+        "Expiring items show the alert colour scale"
+      ]
+    },
+    {
+      "id": "AV-054",
+      "title": "ICAO route parser/builder",
+      "description": "Shared pure JS utility that parses and builds ICAO route strings (e.g. 'SVMI/10L N0176F230 OSMAR2 OSMAR W20 CBC G443 PARDU SVMT/D299J.D06 SVMG') into departure/runway, speed/level, SID, waypoints, airways, STAR, approach, arrival.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 8: Personal Logbook Module",
+      "dependsOn": [
+        "AV-028"
+      ],
+      "acceptanceCriteria": [
+        "The documented example parses into the fields listed in DATABASE_SCHEMA.md",
+        "Builder(parse(x)) returns x for the test corpus",
+        "Malformed strings return descriptive errors instead of throwing"
+      ]
+    },
+    {
+      "id": "AV-055",
+      "title": "Personal logbook UI",
+      "description": "Logbook table with filters and totals summary, entry form with time categories and ICAO route fields (parsed from a route string or entered separately).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 8: Personal Logbook Module",
+      "dependsOn": [
+        "AV-052",
+        "AV-054"
+      ],
+      "acceptanceCriteria": [
+        "User can add, edit and soft-delete entries",
+        "Totals summary updates after changes",
+        "Route string auto-fills SID/STAR/waypoints/airways fields"
+      ]
+    },
+    {
+      "id": "AV-056",
+      "title": "Excel export of logbook with detailed routes",
+      "description": "Export filtered logbook to .xlsx (pure-JS library, e.g. exceljs or SheetJS) including route breakdown columns and totals row.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 8: Personal Logbook Module",
+      "dependsOn": [
+        "AV-052"
+      ],
+      "acceptanceCriteria": [
+        "Exported file opens in Excel and LibreOffice",
+        "Rows and totals match the on-screen filter"
+      ]
+    },
+    {
+      "id": "AV-060",
+      "title": "Flight log API with transactional side effects",
+      "description": "CRUD for flight_log; in one transaction: recompute pilot.total_hours, update aircraft hobbs/tach (GREATEST), create/update the linked pilot_logbook entry; soft delete reverses totals.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 9: Flight Records, Alerts and Maintenance",
+      "dependsOn": [
+        "AV-052",
+        "AV-042"
+      ],
+      "acceptanceCriteria": [
+        "Creating a flight updates pilot total hours, aircraft hobbs/tach and creates one logbook entry atomically",
+        "A failure in any step rolls back everything (test)",
+        "Soft-deleting a flight recalculates total hours"
+      ]
+    },
+    {
+      "id": "AV-061",
+      "title": "Flight record UI",
+      "description": "Flight list and form: aircraft selector (last used first), times, hobbs/tach start/end, fuel start/added/end/used, route, conditions, passengers, notes/issues.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 9: Flight Records, Alerts and Maintenance",
+      "dependsOn": [
+        "AV-060",
+        "AV-055",
+        "AV-044"
+      ],
+      "acceptanceCriteria": [
+        "Fuel used and flight time are pre-computed from inputs and editable",
+        "hobbs_end lower than hobbs_start is rejected"
+      ]
+    },
+    {
+      "id": "AV-062",
+      "title": "Alerts service and endpoint",
+      "description": "GET /api/v1/alerts computing licence, medical, ratings, insurance, registration, airworthiness and maintenance-hours alerts using user_preferences thresholds and the green/yellow/orange/red scale.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 9: Flight Records, Alerts and Maintenance",
+      "dependsOn": [
+        "AV-060"
+      ],
+      "acceptanceCriteria": [
+        "Each alert type is covered by a test with boundary days (30/15/7/0)",
+        "Maintenance alert triggers when hobbs is within maintenance_alert_hours of next_service_hours"
+      ]
+    },
+    {
+      "id": "AV-063",
+      "title": "Operations dashboard",
+      "description": "Home page: logo header, UtcClock, study progress and recent exam scores, priority alerts (modal after login when any is yellow or worse), flight stats, and quick-access tiles filtered by subscription entitlements.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 9: Flight Records, Alerts and Maintenance",
+      "dependsOn": [
+        "AV-062",
+        "AV-026",
+        "AV-136",
+        "AV-147"
+      ],
+      "acceptanceCriteria": [
+        "Alert modal appears once per session when alerts exist",
+        "Stats match API data",
+        "Layout works at all three breakpoints"
+      ]
+    },
+    {
+      "id": "AV-064",
+      "title": "Maintenance module UI",
+      "description": "Upcoming services by hours/date across the fleet, overdue highlighting, maintenance cost tracking per aircraft.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 9: Flight Records, Alerts and Maintenance",
+      "dependsOn": [
+        "AV-062",
+        "AV-046"
+      ],
+      "acceptanceCriteria": [
+        "Overdue items are listed first and highlighted red",
+        "Cost totals per aircraft match the logbook entries"
+      ]
+    },
+    {
+      "id": "AV-034",
+      "title": "Weather map / charts (paid; prototype: navegacion.html Leaflet + OpenWeatherMap layers)",
+      "description": "A paid feature. Leaflet map with toggleable weather layers and a legend. Tiles are requested through a backend proxy so the OpenWeatherMap key is not exposed. Gated by entitlement.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-032",
+        "AV-123"
+      ],
+      "acceptanceCriteria": [
+        "Layers toggle on/off with legend updates",
+        "OpenWeatherMap key does not appear in browser network requests"
+      ]
+    },
+    {
+      "id": "AV-035",
+      "title": "E6B / quick navigation calculator (paid; prototype: navegacion.html route calculator)",
+      "description": "Wind triangle (WCA, heading, GS), time/speed/distance, fuel burn, TAS from CAS/altitude/temperature; reuse the prototype route calculation logic.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-030",
+        "AV-123"
+      ],
+      "acceptanceCriteria": [
+        "Results agree with a physical/electronic E6B within rounding for 10 reference cases",
+        "Inputs accept the user's preferred units"
+      ]
+    },
+    {
+      "id": "AV-070",
+      "title": "Airport/waypoint reference data",
+      "description": "Schema gap: the 10-table design has no airport/waypoint coordinates. Add migration for an airport table (ICAO, name, lat/lon, elevation, runways JSONB) and an import script from OurAirports CSV, or implement manual coordinates per waypoint, per AV-002.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-002",
+        "AV-014"
+      ],
+      "acceptanceCriteria": [
+        "Distance between two ICAO airports can be computed from stored coordinates",
+        "Import is idempotent and re-runnable",
+        "Schema change is documented in DATABASE_SCHEMA.md"
+      ]
+    },
+    {
+      "id": "AV-071",
+      "title": "Navigation calculation library",
+      "description": "Great-circle distance per leg and total, true and magnetic course (manual variation input), wind correction angle, heading, GS, ETE, cruise TAS/IAS; tests against E6B reference cases.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-035",
+        "AV-070"
+      ],
+      "acceptanceCriteria": [
+        "Distances within 0.5% of reference values",
+        "Course/heading within 1 degree of E6B results for the test set"
+      ]
+    },
+    {
+      "id": "AV-072",
+      "title": "Fuel planning calculations",
+      "description": "Fuel per leg, reserve (45 min VFR / IFR rule configurable), alternate fuel, total required, validation against usable capacity.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-071"
+      ],
+      "acceptanceCriteria": [
+        "Plan exceeding usable fuel shows a blocking warning",
+        "Reserve rule is configurable and covered by tests"
+      ]
+    },
+    {
+      "id": "AV-073",
+      "title": "Weight and balance calculations",
+      "description": "Station arms and CG envelope stored in aircraft.performance_params JSONB; compute total weight, CG and check MTOW/envelope limits.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-041"
+      ],
+      "acceptanceCriteria": [
+        "Out-of-envelope or over-MTOW results are highlighted red",
+        "Tests reproduce a POH sample loading problem"
+      ]
+    },
+    {
+      "id": "AV-074",
+      "title": "Generalised performance calculations",
+      "description": "Reuse the ported performance functions with per-aircraft tables (takeoff/landing distance, climb rate, time/distance to cruise).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-031",
+        "AV-041"
+      ],
+      "acceptanceCriteria": [
+        "Calculations use the selected aircraft's tables when present and warn when falling back to defaults"
+      ]
+    },
+    {
+      "id": "AV-075",
+      "title": "Cost calculations",
+      "description": "Fuel cost, hourly operating cost, total flight cost, cost per passenger/mile.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 2,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-072"
+      ],
+      "acceptanceCriteria": [
+        "Costs recalculate when fuel price or hourly rate changes"
+      ]
+    },
+    {
+      "id": "AV-076",
+      "title": "Flight plan persistence",
+      "description": "Schema gap: flight_log stores performed flights only. Add a status column ('planned'/'completed') via migration (or a separate plan store per AV-002) and save flight_plan/calculations JSONB.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-060"
+      ],
+      "acceptanceCriteria": [
+        "A plan can be saved, reopened and edited before the flight",
+        "Planned flights do not affect totals, hobbs or logbook"
+      ]
+    },
+    {
+      "id": "AV-077",
+      "title": "Flight planner UI",
+      "description": "Planner: aircraft selection with automatic parameter load, route editor (ICAO string or step by step: airports, runways, SID, waypoints, airways, STAR, approach, alternates), legs table and calculation panels.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 12,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-071",
+        "AV-072",
+        "AV-073",
+        "AV-074",
+        "AV-075",
+        "AV-076",
+        "AV-054"
+      ],
+      "acceptanceCriteria": [
+        "A full IFR example route can be planned end to end",
+        "Changing aircraft recalculates all panels",
+        "Saved plan stores the ICAO route string"
+      ]
+    },
+    {
+      "id": "AV-078",
+      "title": "NavLog and printable/PDF export",
+      "description": "NavLog table per leg (course, heading, distance, GS, ETE, fuel) with print stylesheet and PDF export (pure-JS library or browser print).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-077"
+      ],
+      "acceptanceCriteria": [
+        "NavLog prints on one A4/Letter page for a 6-leg route",
+        "PDF includes logo header and disclaimer"
+      ]
+    },
+    {
+      "id": "AV-079",
+      "title": "Plan vs actual and post-flight conversion",
+      "description": "Convert a planned flight into a completed flight record (prefilled), show plan vs actual fuel/time/distance/route.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 10: Charts, Flight Planning and Estimates",
+      "dependsOn": [
+        "AV-077",
+        "AV-061"
+      ],
+      "acceptanceCriteria": [
+        "Completing a plan triggers the same side effects as AV-060",
+        "Deviation values are shown for fuel and time"
+      ]
+    },
+    {
+      "id": "AV-080",
+      "title": "User preferences API",
+      "description": "GET/PUT /api/v1/preferences with validation of units, language, theme, density, accessibility, alert thresholds and enabled_modules.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-014",
+        "AV-018"
+      ],
+      "acceptanceCriteria": [
+        "Invalid values return 400",
+        "Defaults exist for every new user"
+      ]
+    },
+    {
+      "id": "AV-081",
+      "title": "Settings UI and module manager",
+      "description": "Settings pages: units, language, theme, font scale, density, accessibility, flight mode, alert days, module manager with dependency validation; About page.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 8,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-080",
+        "AV-027",
+        "AV-022",
+        "AV-023"
+      ],
+      "acceptanceCriteria": [
+        "Every preference persists and is applied after reload",
+        "Module toggles respect dependencies"
+      ]
+    },
+    {
+      "id": "AV-082",
+      "title": "Apply unit preferences across the UI",
+      "description": "Formatting helpers that display values in preferred units with optional dual units ('150 kts / 278 km/h') and always-visible unit labels.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-081",
+        "AV-030"
+      ],
+      "acceptanceCriteria": [
+        "Changing speed unit updates aircraft, planner and logbook views",
+        "Dual-unit option works for all unit types"
+      ]
+    },
+    {
+      "id": "AV-083",
+      "title": "Checklists API (interactive and document)",
+      "description": "CRUD for user checklists, linked optionally to one of the user's aircraft or to a model. Two types: interactive (JSONB items) and document (uploaded PDF/image via stored_file). System templates are read-only and can be copied.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-015",
+        "AV-018",
+        "AV-043",
+        "AV-041"
+      ],
+      "acceptanceCriteria": [
+        "Users only see their own checklists plus system templates",
+        "A document checklist needs a valid uploaded file of an allowed type",
+        "Users can copy a system template and edit the copy"
+      ]
+    },
+    {
+      "id": "AV-084",
+      "title": "Interactive checklist builder UI",
+      "description": "Builder for itemised checklists: phases, items, action text, critical flag, drag-to-reorder, duplicate from template.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-083",
+        "AV-025"
+      ],
+      "acceptanceCriteria": [
+        "Critical items are visually distinct",
+        "Editor supports reordering and saves version-safe (409 on conflict)"
+      ]
+    },
+    {
+      "id": "AV-150",
+      "title": "Checklist document upload and viewer",
+      "description": "Upload an aircraft checklist as PDF or image, link it to an aircraft, and view it in-app with zoom and page navigation, mobile friendly.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-083",
+        "AV-043"
+      ],
+      "acceptanceCriteria": [
+        "Upload of an allowed PDF/image succeeds and disallowed types are rejected",
+        "The viewer works at 375px with pinch-zoom"
+      ]
+    },
+    {
+      "id": "AV-151",
+      "title": "Step-through checklist mode",
+      "description": "Cockpit run mode: one item at a time with large touch targets, check/skip, critical-item confirmation, progress per phase, screen wake lock where supported, and flight-mode styling. Document checklists run page by page.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-084",
+        "AV-150"
+      ],
+      "acceptanceCriteria": [
+        "The whole checklist can be completed with one hand on a phone",
+        "Critical items require an explicit confirmation",
+        "The screen stays awake during a run where the Wake Lock API exists"
+      ]
+    },
+    {
+      "id": "AV-085",
+      "title": "Reports and statistics API",
+      "description": "Aggregates: hours per month/category, airports visited, most flown routes, fuel and cost trends, maintenance costs.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-060"
+      ],
+      "acceptanceCriteria": [
+        "Aggregates match raw data for a seeded dataset (test)",
+        "Queries run under 1 second with 2,000 flights"
+      ]
+    },
+    {
+      "id": "AV-086",
+      "title": "Reports UI and exports",
+      "description": "Charts (Chart.js) and tables with Excel/PDF export.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-085",
+        "AV-056"
+      ],
+      "acceptanceCriteria": [
+        "Each chart has an accessible table alternative",
+        "Exports reflect active filters"
+      ]
+    },
+    {
+      "id": "AV-087",
+      "title": "Flight mode and accessibility preferences",
+      "description": "Flight mode (dark, high contrast, larger text), prefers-reduced-motion and prefers-contrast support, information density spacing scale.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 11: Checklists, Settings and Reports",
+      "dependsOn": [
+        "AV-081"
+      ],
+      "acceptanceCriteria": [
+        "Flight mode can be toggled in one tap from the app bar",
+        "Animations are disabled when reduced motion is preferred"
+      ]
+    },
+    {
+      "id": "AV-160",
+      "title": "Account deletion (self-service)",
+      "description": "Delete-account flow: confirmation, cancel the active subscription at the provider, revoke sessions, delete or anonymise personal data and uploaded files, and keep only the billing records required by law (pseudonymised). Audited.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-122",
+        "AV-114",
+        "AV-043"
+      ],
+      "acceptanceCriteria": [
+        "After deletion the user cannot log in and personal data is gone (test)",
+        "Billing records kept are pseudonymised and documented",
+        "The active subscription is canceled at the provider"
+      ]
+    },
+    {
+      "id": "AV-161",
+      "title": "Personal data export",
+      "description": "Self-service export of all user data (profile, logbook, flights, aircraft, checklists, progress, attempts) as JSON plus uploaded files in a ZIP (pure-JS zip library). Audited and rate limited.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 5,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-160"
+      ],
+      "acceptanceCriteria": [
+        "The export contains every table listed in the data inventory for the user",
+        "Another user's data never appears (test)"
+      ]
+    },
+    {
+      "id": "AV-174",
+      "title": "Data subject rights handling (Ley 19.628 / 21.719, confirm with legal counsel)",
+      "description": "Self-service access (view profile and data), rectification (edit profile), deletion (AV-160) and portability (AV-161), plus a request form and log for opposition/other requests with a response deadline tracker for the owner.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 4,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-160",
+        "AV-161"
+      ],
+      "acceptanceCriteria": [
+        "Each right has a documented path (self-service or request)",
+        "Requests are logged with received and answered dates",
+        "Flow reviewed by legal counsel"
+      ]
+    },
+    {
+      "id": "AV-090",
+      "title": "Calculation reference test suite",
+      "description": "Consolidated test cases for navigation, fuel, W&B, performance and conversions with documented sources (FAA PHAK, POH, E6B).",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-071",
+        "AV-072",
+        "AV-073",
+        "AV-074"
+      ],
+      "acceptanceCriteria": [
+        "Each critical formula has at least 5 sourced reference cases",
+        "Sources are referenced in code comments"
+      ]
+    },
+    {
+      "id": "AV-091",
+      "title": "Aeronautical review with a certified pilot",
+      "description": "Walk through calculators, planner and logbook with a certified pilot/instructor and record findings.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 3,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-090",
+        "AV-077",
+        "AV-147"
+      ],
+      "acceptanceCriteria": [
+        "Review notes recorded and findings turned into tasks or accepted risks"
+      ]
+    },
+    {
+      "id": "AV-092",
+      "title": "Security hardening and review",
+      "description": "Production CSP via helmet (no inline scripts, Mercado Pago and OAuth origins allowlisted), HSTS, CORS allowlist, cookie flags, rate limits, upload checks, user-scoping review of every query, and an OWASP ASVS L1 checklist pass.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-029",
+        "AV-111",
+        "AV-113"
+      ],
+      "acceptanceCriteria": [
+        "npm audit shows no high/critical issues",
+        "Every repository query filters by user_id where applicable (review checklist signed off)",
+        "The CSP blocks inline scripts in production",
+        "The ASVS L1 checklist is completed with findings resolved or accepted"
+      ]
+    },
+    {
+      "id": "AV-093",
+      "title": "End-to-end smoke tests",
+      "description": "Playwright (dev-only dependency) smoke tests with a mocked OAuth provider and Mercado Pago sandbox test users: sign up, subscribe (test card), take a lesson, take a quiz, add aircraft, log a flight, run an uploaded checklist, plan a flight, export data.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 6,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-079",
+        "AV-151",
+        "AV-146",
+        "AV-124"
+      ],
+      "acceptanceCriteria": [
+        "Smoke suite passes locally against Docker PostgreSQL 10",
+        "Suite runs in under 5 minutes"
+      ]
+    },
+    {
+      "id": "AV-094",
+      "title": "Production build and Passenger configuration",
+      "description": "Final production config: startup file, NODE_ENV=production, SPA fallback routing, static caching headers, log locations, pure-JS npm install on the server.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-029",
+        "AV-092"
+      ],
+      "acceptanceCriteria": [
+        "Deep links (e.g. /aircraft/123) load correctly after refresh",
+        "App restarts cleanly from the cPanel Node.js App screen"
+      ]
+    },
+    {
+      "id": "AV-095",
+      "title": "Production release and runbook",
+      "description": "Create the production DB and user, set environment variables in cPanel (OAuth, Mercado Pago production credentials, secrets), register the production webhook endpoint, deploy, verify migrations, promote the admin account and smoke test. Update the docs/DEPLOYMENT.md runbook.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 3,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-094",
+        "AV-091"
+      ],
+      "acceptanceCriteria": [
+        "Production smoke test passes",
+        "Runbook allows a redeploy without assistance"
+      ]
+    },
+    {
+      "id": "AV-096",
+      "title": "Backup policy and restore drill",
+      "description": "Scheduled pg_dump via cPanel cron (or hosting backups), encrypted at rest and kept off-server, with a documented retention period consistent with the privacy policy. Uploaded files are backed up too. Run one restore test into a scratch DB.",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 2,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-095"
+      ],
+      "acceptanceCriteria": [
+        "A daily backup is produced and stored encrypted off-server",
+        "The retention period is documented and matches the privacy policy",
+        "The restore drill succeeds and is documented"
+      ]
+    },
+    {
+      "id": "AV-097",
+      "title": "Retire legacy static pages",
+      "description": "Remove or redirect legacy HTML pages on the public site according to AV-002 (keep public landing page if decided).",
+      "category": "ADMINISTRATIVE",
+      "estimateHours": 1,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-095",
+        "AV-002",
+        "AV-036",
+        "AV-185"
+      ],
+      "acceptanceCriteria": [
+        "Old URLs redirect or return the decided content",
+        "No legacy page loads the old API key"
+      ]
+    },
+    {
+      "id": "AV-098",
+      "title": "Developer and API documentation",
+      "description": "Update the root README, backend/README (endpoints, env vars, migrations, billing webhook setup) and frontend/README. Sync the Plans docs with any schema changes.",
+      "category": "DEVELOPMENT",
+      "estimateHours": 3,
+      "phase": "Phase 12: Privacy, QA, Hardening and Production Release",
+      "dependsOn": [
+        "AV-094"
+      ],
+      "acceptanceCriteria": [
+        "A new developer can run the stack locally by following the README",
+        "Every endpoint is listed with method, path and auth requirement"
+      ]
+    }
+  ],
+  "ideas": [
+    {
+      "title": "Offline mode / PWA with sync",
+      "description": "Service worker caching plus an offline write queue using the reserved synced_at/version/device_id/conflict_status columns; per-table conflict strategies from the original roadmap (manual for pilot/aircraft, LWW for logbooks, append-only flight_log)."
+    },
+    {
+      "title": "Voice input / voice commands",
+      "description": "Hands-free data entry in the cockpit ('add 15 gallons', 'read takeoff checklist') via the Web Speech API."
+    },
+    {
+      "title": "Home-screen widgets",
+      "description": "Next flight, total hours, alerts and base weather widgets; requires PWA/native wrapper, not possible in a plain web app."
+    },
+    {
+      "title": "Smart notifications",
+      "description": "Pre-flight W&B reminder, post-flight logging reminder, maintenance and document reminders via Web Notifications or email."
+    },
+    {
+      "title": "Global search",
+      "description": "Unified search across aircraft, flights, logbook and checklists with filters, suggestions and history."
+    },
+    {
+      "title": "Interactive onboarding",
+      "description": "Wizard: welcome, pilot profile, first aircraft, module tour, initial preferences."
+    },
+    {
+      "title": "Quick actions and keyboard shortcuts",
+      "description": "Always-visible FAB (new flight, quick calculator, checklist) and shortcuts/gestures."
+    },
+    {
+      "title": "Templates and presets",
+      "description": "Saved frequent routes with calculations, aircraft performance presets (economy cruise, max range), checklist presets per flight type."
+    },
+    {
+      "title": "Smart night mode",
+      "description": "Automatic dark mode based on sunset/sunrise at the user's location."
+    },
+    {
+      "title": "Contextual help and tutorials",
+      "description": "Help icons, tooltips, 'what is this?' explanations and future video tutorials."
+    },
+    {
+      "title": "Progress indicators with cancel",
+      "description": "Progress bars, ETA and cancel for long exports and report generation."
+    },
+    {
+      "title": "Cloud backup integration",
+      "description": "Export/backup to Google Drive or Dropbox; full data export/import (JSON + documents ZIP)."
+    },
+    {
+      "title": "NOTAMs integration",
+      "description": "Show NOTAMs for departure, destination and alternates in the planner."
+    },
+    {
+      "title": "Weather in the flight planner",
+      "description": "Attach METAR/TAF and winds aloft to plan legs automatically."
+    },
+    {
+      "title": "Spare parts management",
+      "description": "Listed under predictive maintenance in the roadmap but no table exists; needs schema design."
+    },
+    {
+      "title": "Scheduled flights and crew list",
+      "description": "Dashboard 'upcoming scheduled flights' and a crew list screen are mentioned in the roadmap but have no schema."
+    },
+    {
+      "title": "Predictive maintenance with ML",
+      "description": "Predict maintenance needs from usage history."
+    },
+    {
+      "title": "Route optimisation",
+      "description": "Suggest optimal routes/altitudes considering winds and fuel."
+    },
+    {
+      "title": "Financial reports and billing integration",
+      "description": "Operating cost analysis, financial reports and external billing systems."
+    },
+    {
+      "title": "Geolocation and moving map",
+      "description": "GPS position on the map during flight via the Geolocation API."
+    },
+    {
+      "title": "Public landing and Twitch integration",
+      "description": "Existing prototype index.html includes a personal landing page, courses and Twitch live/clips integration; could become a separate public site."
+    },
+    {
+      "title": "Visual trend comparisons",
+      "description": "Charts for hours evolution, fuel consumption per flight, plan vs actual performance and cost trends beyond the MVP reports."
+    },
+    {
+      "title": "Annual plans and coupons",
+      "description": "Yearly pricing, discount codes and school/group licences."
+    },
+    {
+      "title": "Instructor / flight school accounts",
+      "description": "Instructors follow students' progress and exam results; school-wide licences."
+    },
+    {
+      "title": "Spaced-repetition question review",
+      "description": "Re-ask previously failed questions on a spaced schedule."
+    },
+    {
+      "title": "Additional question types",
+      "description": "Multiple-answer, image hotspot and numeric-calculation questions beyond single-answer multiple choice."
+    },
+    {
+      "title": "Certificates of completion",
+      "description": "Downloadable certificates per subject or for the full ground-school course."
+    },
+    {
+      "title": "Discussion / Q&A per lesson",
+      "description": "Comments or questions per lesson, moderated by admins."
+    },
+    {
+      "title": "Additional login providers",
+      "description": "Apple and Microsoft sign-in."
+    },
+    {
+      "title": "Additional payment adapters",
+      "description": "Second provider adapter (Stripe or Flow.cl) behind the BillingProvider interface, e.g. for other countries."
+    },
+    {
+      "title": "Additional LATAM authorities",
+      "description": "Content and exams for other DGACs (Ecuador RDAC, Bolivia RAB, Peru RAP, etc.) using the authority/regulation_reference model, with per-country pricing and currency."
+    },
+    {
+      "title": "FAA cross-reference material",
+      "description": "Optional FAA references (PHAK, AIM) shown as complementary reading, never as the compliance basis."
+    }
+  ]
+}
